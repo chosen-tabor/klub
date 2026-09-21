@@ -436,3 +436,67 @@ h1 {
   opacity: 0.5;
   cursor: wait;
 }
+
+/* Nové prvky pro sérii a detail epizody */
+.date-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.season-badge {
+  background: rgba(212, 175, 55, 0.2);
+  border: 1px solid var(--gold);
+  color: var(--gold-light);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+.episode-heading {
+  font-size: 1.25rem;
+  color: #ffffff;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.synopsis-box {
+  background: rgba(8, 22, 26, 0.55);
+  border: 1px solid rgba(69, 143, 155, 0.25);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.synopsis-text {
+  color: #e2e8f0;
+}
+
+.meta-row {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+}
+
+.meta-label {
+  color: var(--tag-bg);
+  font-weight: 700;
+}
+
+.idea-row {
+  border-top: 1px dashed rgba(255, 255, 255, 0.15);
+  padding-top: 0.45rem;
+  margin-top: 0.2rem;
+  color: #fef08a; /* Zlatavý akcent pro myšlenku k diskuzi */
+}
+
+.idea-row .meta-label {
+  color: var(--gold-light);
+}

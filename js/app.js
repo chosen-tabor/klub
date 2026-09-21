@@ -161,34 +161,46 @@ function render(isSaving = false) {
 
     card.innerHTML = `
       <div class="card-top">
-        <span class="date-title">${session.label}</span>
+        <div class="date-group">
+          <span class="season-badge">${session.season}</span>
+          <span class="date-title">${session.label}</span>
+        </div>
         <span class="time-badge">18:00</span>
       </div>
 
       <div class="episode-detail">
-        <h3>${session.ep}</h3>
-        <p>${session.desc}</p>
+        <h3 class="episode-heading">${session.episodeNumber}: ${session.title}</h3>
+        
+        <div class="synopsis-box">
+          <p class="synopsis-text">${session.summary}</p>
+          <div class="meta-row">
+            <span class="meta-label">Hlavní postavy:</span> ${session.characters}
+          </div>
+          <div class="meta-row idea-row">
+            <span class="meta-label">Hlavní myšlenka / k diskuzi:</span> ${session.idea}
+          </div>
+        </div>
       </div>
 
-      <!-- Informace k večeru -->
+      <!-- Informace k večeru / organizační poznámka -->
       <div class="info-container">
         ${data.info ? `
           <div class="info-section">
             <div class="info-header">
-              <span class="info-label">📌 Informace k večeru:</span>
+              <span class="info-label">📌 Organizační info:</span>
               <button class="btn-edit-info" data-key="${key}">Upravit</button>
             </div>
             <div class="info-text">${data.info}</div>
           </div>
         ` : `
           ${!isEditingThis ? `
-            <button class="btn-add-info" data-key="${key}">+ Přidat informaci k večeru</button>
+            <button class="btn-add-info" data-key="${key}">+ Přidat organizační info</button>
           ` : ''}
         `}
 
         ${isEditingThis ? `
           <div class="info-editor">
-            <textarea class="info-textarea" rows="3" placeholder="Organizační poznámky...">${data.info || ''}</textarea>
+            <textarea class="info-textarea" rows="3" placeholder="Poznámky k technice, občerstvení...">${data.info || ''}</textarea>
             <div class="editor-actions">
               <button class="btn-save-info" ${isSaving ? 'disabled' : ''}>Uložit do tabulky</button>
               <button class="btn-cancel-info">Zrušit</button>
