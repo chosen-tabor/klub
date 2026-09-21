@@ -14,16 +14,51 @@ const els = {
   logoutBtn: document.getElementById('logoutBtn'),
   statusText: document.getElementById('statusText'),
   refreshBtn: document.getElementById('refreshBtn'),
-  list: document.getElementById('sessionsList')
+  list: document.getElementById('sessionsList'),
+  themeToggleBtn: document.getElementById('themeToggleBtn'),
+  themeIcon: document.getElementById('themeIcon'),
+  themeLabel: document.getElementById('themeLabel')
 };
 
 const activeEditing = {};
 
-// Inicializace stavu přihlášení
+// ==========================================
+// SPRÁVA TÉMAT (SVĚTLÉ PRIMÁRNÍ, TMAVÉ VOLITELNÉ)
+// ==========================================
+function initTheme() {
+  const savedTheme = localStorage.getItem('chosen_theme') || 'light';
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-theme');
+    els.themeIcon.textContent = '☀️';
+    els.themeLabel.textContent = 'Světlý režim';
+  } else {
+    document.body.classList.remove('dark-theme');
+    els.themeIcon.textContent = '🌙';
+    els.themeLabel.textContent = 'Tmavý režim';
+  }
+}
+
+els.themeToggleBtn.addEventListener('click', () => {
+  const isDark = document.body.classList.toggle('dark-theme');
+  if (isDark) {
+    localStorage.setItem('chosen_theme', 'dark');
+    els.themeIcon.textContent = '☀️';
+    els.themeLabel.textContent = 'Světlý režim';
+  } else {
+    localStorage.setItem('chosen_theme', 'light');
+    els.themeIcon.textContent = '🌙';
+    els.themeLabel.textContent = 'Tmavý režim';
+  }
+});
+
+initTheme();
+
+// ==========================================
+// AUTENTIZACE
+// ==========================================
 Store.initAuth();
 updateAuthVisibility();
 
-// Zpracování formuláře přihlášení
 els.loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = els.loginName.value.trim();
@@ -51,7 +86,6 @@ els.loginForm.addEventListener('submit', async (e) => {
   }
 });
 
-// Odhlášení
 els.logoutBtn.addEventListener('click', () => {
   Store.logout();
   updateAuthVisibility();
@@ -73,6 +107,9 @@ function updateAuthVisibility() {
   }
 }
 
+// ==========================================
+// DATA & VYKRESLOVÁNÍ
+// ==========================================
 async function syncData() {
   if (!Store.state.isLoggedIn) return;
 
@@ -83,7 +120,7 @@ async function syncData() {
     els.statusText.textContent = 'Režim ukázky (vložte SCRIPT_URL).';
   } else if (res.success) {
     Store.loadSheetData(res.data);
-    els.statusText.textContent = 'Aktualizováno právě teď.';
+    els.statusText.textContent = 'Aktuální data načtena.';
   } else {
     els.statusText.textContent = 'Chyba synchronizace dat.';
   }
@@ -126,7 +163,7 @@ async function handleSaveInfo(session, newInfoText) {
   const key = `${session.day}-${session.month}`;
   const currentData = Store.state.sessionsData[key] || { attendees: [], info: '' };
 
-  els.statusText.textContent = 'Ukládám informaci...';
+  els.statusText.textContent = 'Ukládám poznámku...';
   render(true);
 
   const res = await API.updateAttendance(session.dateStr, currentData.attendees, newInfoText, pin);
@@ -134,7 +171,7 @@ async function handleSaveInfo(session, newInfoText) {
   if (res.status === 'ok' || res.demo) {
     Store.state.sessionsData[key] = { ...currentData, info: newInfoText };
     activeEditing[key] = false;
-    els.statusText.textContent = 'Informace byla uložena.';
+    els.statusText.textContent = 'Poznámka uložena.';
   } else {
     alert('Chyba při ukládání: ' + (res.message || 'Nesprávný PIN'));
     els.statusText.textContent = 'Uložení selhalo.';
@@ -159,75 +196,76 @@ function render(isSaving = false) {
     const card = document.createElement('article');
     card.className = 'session-card';
 
+    // PLOCHÁ STRUKTURA (ŽÁDNÁ KARTA V KARTĚ - PLNA ŠÍŘKA PRO TEXT)
     card.innerHTML = `
-      <div class="card-top">
-        <div class="date-group">
-          <span class="season-badge">${session.season}</span>
-          <span class="date-title">${session.label}</span>
+      <div class="card-header-row">
+        <div class="badge-and-date">
+          <span class="season-tag">${session.season}</span>
+          <span class="date-text">${session.label}</span>
         </div>
-        <span class="time-badge">18:00</span>
+        <span class="time-tag">18:00</span>
       </div>
 
-      <div class="episode-detail">
-        <h3 class="episode-heading">${session.episodeNumber}: ${session.title}</h3>
-        
-        <div class="synopsis-box">
-          <p class="synopsis-text">${session.summary}</p>
-          <div class="meta-row">
-            <span class="meta-label">Hlavní postavy:</span> ${session.characters}
-          </div>
-          <div class="meta-row idea-row">
-            <span class="meta-label">Hlavní myšlenka / k diskuzi:</span> ${session.idea}
-          </div>
-        </div>
+      <h3 class="episode-title-heading">${session.episodeNumber}: ${session.title}</h3>
+      
+      <p class="summary-text">${session.summary}</p>
+
+      <p class="characters-text">
+        <strong>Hlavní postavy:</strong> ${session.characters}
+      </p>
+
+      <div class="discussion-idea">
+        <strong>Hlavní myšlenka k diskuzi:</strong>
+        ${session.idea}
       </div>
 
-      <!-- Informace k večeru / organizační poznámka -->
-      <div class="info-container">
+      <!-- ORGANIZAČNÍ INFO / POZNÁMKA -->
+      <div class="organizer-section">
         ${data.info ? `
-          <div class="info-section">
-            <div class="info-header">
-              <span class="info-label">📌 Organizační info:</span>
-              <button class="btn-edit-info" data-key="${key}">Upravit</button>
+          <div class="organizer-info-block">
+            <div class="organizer-info-header">
+              <span>📌 Organizační info:</span>
+              <button class="btn-edit-note" data-key="${key}">Upravit</button>
             </div>
-            <div class="info-text">${data.info}</div>
+            <div class="organizer-info-content">${data.info}</div>
           </div>
         ` : `
           ${!isEditingThis ? `
-            <button class="btn-add-info" data-key="${key}">+ Přidat organizační info</button>
+            <button class="btn-add-note" data-key="${key}">+ Přidat organizační info k večeru</button>
           ` : ''}
         `}
 
         ${isEditingThis ? `
-          <div class="info-editor">
-            <textarea class="info-textarea" rows="3" placeholder="Poznámky k technice, občerstvení...">${data.info || ''}</textarea>
-            <div class="editor-actions">
-              <button class="btn-save-info" ${isSaving ? 'disabled' : ''}>Uložit do tabulky</button>
-              <button class="btn-cancel-info">Zrušit</button>
+          <div class="note-editor">
+            <textarea class="note-textarea" rows="3" placeholder="Poznámka k technice, čaji, moderování...">${data.info || ''}</textarea>
+            <div class="note-actions">
+              <button class="btn-save-note" ${isSaving ? 'disabled' : ''}>Uložit do tabulky</button>
+              <button class="btn-cancel-note">Zrušit</button>
             </div>
           </div>
         ` : ''}
       </div>
 
-      <!-- Účastníci -->
-      <div class="attendees-wrap">
-        <div class="attendees-label">Organizační tým (${attendees.length}):</div>
-        <div class="tags-box">
+      <!-- ÚČASTNÍCI ORGANIZAČNÍHO TÝMU -->
+      <div class="attendees-container">
+        <div class="attendees-title">Organizační tým (${attendees.length}):</div>
+        <div class="tags-wrap">
           ${attendees.length > 0 
-            ? attendees.map(a => `<span class="attendee-tag">${a}</span>`).join('') 
-            : `<span class="no-one">Zatím nikdo nezapsán</span>`
+            ? attendees.map(a => `<span class="person-tag">${a}</span>`).join('') 
+            : `<span class="no-attendees">Zatím nikdo nezapsán</span>`
           }
         </div>
       </div>
 
-      <button class="btn-toggle ${isPresent ? 'active' : ''}" ${isSaving ? 'disabled' : ''}>
+      <!-- VELKÉ TLAČÍTKO AKCE PŘES CELOU ŠÍŘKU -->
+      <button class="btn-toggle-attendance ${isPresent ? 'is-attending' : ''}" ${isSaving ? 'disabled' : ''}>
         ${isPresent ? '✓ Odhlásit mou účast' : '+ Budu přítomen'}
       </button>
     `;
 
-    card.querySelector('.btn-toggle').addEventListener('click', () => handleToggleAttendance(session));
+    card.querySelector('.btn-toggle-attendance').addEventListener('click', () => handleToggleAttendance(session));
 
-    const addBtn = card.querySelector('.btn-add-info');
+    const addBtn = card.querySelector('.btn-add-note');
     if (addBtn) {
       addBtn.addEventListener('click', () => {
         activeEditing[key] = true;
@@ -235,7 +273,7 @@ function render(isSaving = false) {
       });
     }
 
-    const editBtn = card.querySelector('.btn-edit-info');
+    const editBtn = card.querySelector('.btn-edit-note');
     if (editBtn) {
       editBtn.addEventListener('click', () => {
         activeEditing[key] = true;
@@ -243,13 +281,13 @@ function render(isSaving = false) {
       });
     }
 
-    const saveBtn = card.querySelector('.btn-save-info');
+    const saveBtn = card.querySelector('.btn-save-note');
     if (saveBtn) {
-      const textarea = card.querySelector('.info-textarea');
+      const textarea = card.querySelector('.note-textarea');
       saveBtn.addEventListener('click', () => handleSaveInfo(session, textarea.value));
     }
 
-    const cancelBtn = card.querySelector('.btn-cancel-info');
+    const cancelBtn = card.querySelector('.btn-cancel-note');
     if (cancelBtn) {
       cancelBtn.addEventListener('click', () => {
         activeEditing[key] = false;
@@ -261,35 +299,13 @@ function render(isSaving = false) {
   });
 }
 
-// Automatické vnucení a reload při aktualizaci Service Workeru
+// Service worker reload
 if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('./sw.js').then((reg) => {
-    // Ručně zkontroluje, zda na serveru není novější sw.js
     reg.update();
-
-    reg.addEventListener('updatefound', () => {
-      const newWorker = reg.installing;
-      newWorker.addEventListener('statechange', () => {
-        // Jakmile se nový SW nainstaloval a starý už ovládal stránku -> reload
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          console.log('Nalezena nová verze PWA. Obnovuji stránku...');
-          window.location.reload();
-        }
-      });
-    });
   }).catch(console.error);
-
-  // Pojistka: reload při změně controlleru
-  let refreshing = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!refreshing) {
-      refreshing = true;
-      window.location.reload();
-    }
-  });
 }
 
-// Pokud už byl uživatel přihlášený v mezipaměti, rovnou stáhneme data
 if (Store.state.isLoggedIn) {
   syncData();
 }

@@ -1,38 +1,67 @@
+/* =========================================
+   PROMĚNNÉ: SVĚTLÉ TÉMA (PRIMÁRNÍ)
+   ========================================= */
 :root {
-  --primary: #1d7c8a;         /* Tyrkysová z plakátu */
-  --primary-light: #2496a7;
-  --primary-dark: #124d56;
-  --bg-gradient: linear-gradient(180deg, #11343a 0%, #0a1f23 100%);
-  --gold: #d4af37;
-  --gold-light: #fef08a;
-  --card-bg: rgba(23, 67, 75, 0.75);
-  --card-border: rgba(69, 143, 155, 0.45);
-  --text-main: #f8fafc;
-  --text-muted: #d1d5db;
-  --tag-bg: #2dd4bf;
-  --tag-color: #042f2e;
-  --danger: #fb7185;
-  --radius: 16px;
+  --bg: #f1f5f9;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --text-main: #0f172a;        /* Téměř černá pro maximální kontrast */
+  --text-sub: #475569;         /* Zřetelná šedá pro vedlejší text */
+  --primary: #12636f;          /* Sytá hluboká tyrkysová pro perfektní čitelnost */
+  --primary-hover: #0c4d57;
+  --accent-gold: #b45309;      /* Teplá jantarovo-zlatá */
+  --accent-gold-bg: #fef3c7;
+  --tag-bg: #ccfbf1;
+  --tag-color: #0f766e;
+  --tag-border: #99f6e4;
+  --danger: #e11d48;
+  --danger-bg: #ffe4e6;
+  --shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.07), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --radius: 18px;
 }
 
+/* =========================================
+   TMAVÉ TÉMA (VOLITELNÉ PŘEPNUTÍ)
+   ========================================= */
+body.dark-theme {
+  --bg: #091b1f;
+  --card-bg: #112d33;
+  --card-border: #1d4b54;
+  --text-main: #f8fafc;
+  --text-sub: #cbd5e1;
+  --primary: #2dd4bf;
+  --primary-hover: #14b8a6;
+  --accent-gold: #fde047;
+  --accent-gold-bg: rgba(254, 240, 138, 0.12);
+  --tag-bg: rgba(45, 212, 191, 0.2);
+  --tag-color: #5eead4;
+  --tag-border: rgba(45, 212, 191, 0.4);
+  --danger: #fb7185;
+  --danger-bg: rgba(251, 113, 133, 0.15);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ZÁKLADNÍ RESETY A TYPOGRAFIE */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--bg-gradient);
+  background-color: var(--bg);
   color: var(--text-main);
   min-height: 100vh;
-  font-size: 17px; /* Větší výchozí velikost */
-  line-height: 1.5;
-  padding: 1.2rem 1rem 4rem;
+  font-size: 18px; /* Velké čitelné písmo */
+  line-height: 1.55;
+  padding: 1rem 0.75rem 4rem;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .container {
-  max-width: 640px;
+  max-width: 650px;
   margin: 0 auto;
 }
 
@@ -40,70 +69,80 @@ body {
   display: none !important;
 }
 
-/* TYPOGRAFIE A HLAVIČKA */
+/* PŘEPÍNAČ TÉMATU V ROCHU */
+.top-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.theme-toggle-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  border-radius: 50px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: var(--shadow);
+}
+
+/* HLAVIČKA */
+header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
+}
+
 .subtitle {
-  color: var(--gold-light);
-  font-size: 1.05rem;
-  letter-spacing: 0.12em;
+  color: var(--accent-gold);
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 h1 {
-  font-size: 2.3rem;
+  font-size: 2.5rem;
   font-weight: 900;
-  letter-spacing: 0.04em;
-  color: #ffffff;
-  margin: 0.15rem 0;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.03em;
+  color: var(--primary);
+  margin: 0.2rem 0;
+  line-height: 1.15;
 }
 
 .location-info {
-  font-size: 1rem;
-  color: var(--text-muted);
-  line-height: 1.45;
+  font-size: 1.05rem;
+  color: var(--text-sub);
+  margin-top: 0.35rem;
 }
 
-/* PŘIHLAŠOVACÍ OBRAZOVKA */
+/* PŘIHLAŠOVACÍ FORMULÁŘ */
 .login-view {
-  padding-top: 2rem;
-  text-align: center;
-}
-
-.hero-header {
-  margin-bottom: 2rem;
-}
-
-.location-badge {
-  display: inline-block;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--card-border);
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  padding: 0.35rem 0.9rem;
-  border-radius: 20px;
-  margin-top: 0.5rem;
+  padding-top: 1.5rem;
 }
 
 .login-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  backdrop-filter: blur(14px);
   border-radius: var(--radius);
-  padding: 1.8rem 1.4rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  text-align: left;
+  padding: 1.75rem 1.4rem;
+  box-shadow: var(--shadow);
 }
 
 .login-card h2 {
-  font-size: 1.4rem;
-  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 800;
   margin-bottom: 0.4rem;
 }
 
 .login-desc {
-  font-size: 0.95rem;
-  color: var(--text-muted);
+  font-size: 1.05rem;
+  color: var(--text-sub);
   margin-bottom: 1.5rem;
 }
 
@@ -111,392 +150,387 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.25rem;
 }
 
 .input-box label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--gold-light);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-sub);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .input-box input {
-  background: rgba(10, 28, 32, 0.9);
-  border: 1.5px solid var(--card-border);
-  border-radius: 10px;
-  padding: 0.85rem 1rem;
-  color: #fff;
-  font-size: 1.15rem; /* Velké pohodlné písmo v inputu */
+  background: var(--bg);
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  color: var(--text-main);
+  font-size: 1.25rem;
+  font-weight: 600;
   outline: none;
   transition: border-color 0.2s;
 }
 
 .input-box input:focus {
-  border-color: var(--tag-bg);
+  border-color: var(--primary);
 }
 
 .btn-submit {
   width: 100%;
   background: var(--primary);
-  border: 1px solid var(--tag-bg);
-  color: #fff;
-  font-size: 1.15rem;
-  font-weight: 700;
-  padding: 0.95rem;
-  border-radius: 10px;
+  border: none;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 800;
+  padding: 1rem;
+  border-radius: 12px;
   cursor: pointer;
+  box-shadow: 0 4px 14px rgba(18, 99, 111, 0.3);
   margin-top: 0.5rem;
-  box-shadow: 0 4px 12px rgba(29, 124, 138, 0.4);
-  transition: all 0.2s ease;
 }
 
-.btn-submit:hover {
-  background: var(--primary-light);
+body.dark-theme .btn-submit {
+  color: #091b1f;
 }
 
 .login-error {
-  background: rgba(251, 113, 133, 0.15);
-  border: 1px solid var(--danger);
-  color: #fecdd3;
-  padding: 0.65rem 0.85rem;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  background: var(--danger-bg);
+  color: var(--danger);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
   margin-bottom: 1rem;
 }
 
-/* STAVOVÁ LIŠTA UŽIVATELE (po přihlášení) */
-.user-status-bar {
+/* STAVOVÁ LIŠTA UŽIVATELE */
+.user-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(11, 31, 35, 0.7);
+  background: var(--card-bg);
   border: 1px solid var(--card-border);
-  padding: 0.75rem 1.1rem;
   border-radius: 12px;
-  margin: 1.2rem 0;
-  font-size: 1rem;
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+  font-size: 1.05rem;
 }
 
-.user-greeting strong {
-  color: var(--tag-bg);
+.user-name-display {
+  font-weight: 800;
+  color: var(--primary);
 }
 
 .btn-logout {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--text-muted);
-  border-radius: 6px;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.85rem;
+  border: 1px solid var(--card-border);
+  color: var(--text-sub);
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
-.btn-logout:hover {
-  border-color: var(--danger);
-  color: var(--danger);
-}
-
-/* SYNCHRONIZACE */
+/* SYNCHRONIZAČNÍ LIŠTA */
 .sync-panel {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 0.95rem;
-  color: var(--text-muted);
-  margin-bottom: 1.2rem;
-  padding: 0 0.25rem;
+  color: var(--text-sub);
+  margin-bottom: 1.25rem;
+  padding: 0 0.4rem;
 }
 
 .btn-refresh {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--card-bg);
   border: 1px solid var(--card-border);
   color: var(--text-main);
   border-radius: 8px;
-  padding: 0.45rem 0.85rem;
+  padding: 0.4rem 0.85rem;
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
-/* KARTY VEČERŮ */
+/* SEZNAM KARET */
 .sessions-list {
   display: flex;
   flex-direction: column;
-  gap: 1.3rem;
+  gap: 1.5rem;
 }
 
+/* HLAVNÍ KARTA VEČERA (PLNÁ ŠÍŘKA BEZ VNITŘNÍCH KARET) */
 .session-card {
   background: var(--card-bg);
-  border: 1.5px solid var(--card-border);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius);
-  padding: 1.35rem;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  padding: 1.35rem 1.2rem;
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.card-top {
+/* ZÁHLAVÍ KARTY */
+.card-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 2px solid var(--bg);
   padding-bottom: 0.65rem;
 }
 
-.date-title {
+.badge-and-date {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.season-tag {
+  background: var(--accent-gold-bg);
+  color: var(--accent-gold);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+.date-text {
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: var(--text-main);
+}
+
+.time-tag {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--primary);
+  background: var(--bg);
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+}
+
+/* NÁZEV A DĚJ (PŘÍMO V TĚLE KARTY) */
+.episode-title-heading {
   font-size: 1.35rem;
   font-weight: 800;
-  color: var(--gold-light);
+  color: var(--primary);
+  line-height: 1.3;
 }
 
-.time-badge {
-  font-size: 0.95rem;
-  font-weight: 700;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 0.3rem 0.65rem;
-  border-radius: 8px;
-  color: #f1f5f9;
+.summary-text {
+  font-size: 1.1rem;
+  color: var(--text-main);
+  line-height: 1.55;
 }
 
-.episode-detail h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 0.3rem;
-  line-height: 1.35;
-}
-
-.episode-detail p {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-}
-
-/* INFORMACE / POZNÁMKY K VEČERU */
-.info-section {
-  background: rgba(8, 22, 25, 0.6);
-  border-left: 3px solid var(--gold);
-  border-radius: 8px;
-  padding: 0.75rem 0.9rem;
-}
-
-.info-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.35rem;
-}
-
-.info-label {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  color: var(--gold-light);
-  font-weight: 700;
-}
-
-.info-text {
-  font-size: 1.05rem; /* Čitelný text poznámky */
-  color: #f8fafc;
+.characters-text {
+  font-size: 1.02rem;
+  color: var(--text-sub);
   line-height: 1.45;
 }
 
-.btn-add-info {
-  background: transparent;
-  border: 1.5px dashed rgba(69, 143, 155, 0.6);
-  color: var(--gold-light);
-  border-radius: 8px;
-  padding: 0.65rem 0.9rem;
+.characters-text strong {
+  color: var(--text-main);
+}
+
+/* ZDŮRAZNĚNÁ MYŠLENKA (ČISTÁ LINKA MÍSTO KRABIČKY) */
+.discussion-idea {
+  border-left: 4px solid var(--accent-gold);
+  padding-left: 0.85rem;
+  margin: 0.2rem 0;
+  font-size: 1.08rem;
+  font-weight: 500;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.discussion-idea strong {
+  display: block;
   font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: left;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-gold);
+  margin-bottom: 0.2rem;
 }
 
-.btn-add-info:hover {
-  background: rgba(23, 67, 75, 0.4);
-  border-color: var(--tag-bg);
+/* ORGANIZAČNÍ INFO */
+.organizer-info-block {
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
 }
 
-.btn-edit-info {
+.organizer-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.35rem;
+}
+
+.btn-edit-note {
   background: transparent;
   border: none;
-  color: var(--text-muted);
-  font-size: 0.85rem;
+  color: var(--accent-gold);
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   text-decoration: underline;
 }
 
-.info-editor {
+.organizer-info-content {
+  font-size: 1.05rem;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.btn-add-note {
+  background: transparent;
+  border: 2px dashed var(--card-border);
+  color: var(--text-sub);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.btn-add-note:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* EDITOR POZNÁMKY */
+.note-editor {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
-  background: rgba(10, 27, 30, 0.85);
+  background: var(--bg);
   padding: 0.9rem;
-  border-radius: 10px;
-  border: 1px solid var(--card-border);
+  border-radius: 12px;
 }
 
-.info-textarea {
+.note-textarea {
   width: 100%;
-  background: #061417;
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  color: #fff;
-  padding: 0.75rem;
-  font-size: 1rem;
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 10px;
+  color: var(--text-main);
+  padding: 0.85rem;
+  font-size: 1.1rem;
+  line-height: 1.45;
   resize: vertical;
   outline: none;
 }
 
-.editor-actions {
+.note-actions {
   display: flex;
   gap: 0.6rem;
 }
 
-.btn-save-info {
+.btn-save-note {
   background: var(--primary);
-  border: 1px solid var(--tag-bg);
+  border: none;
   color: #fff;
-  font-size: 0.95rem;
-  font-weight: 700;
-  padding: 0.55rem 1.1rem;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 0.65rem 1.2rem;
   border-radius: 8px;
   cursor: pointer;
 }
 
-.btn-cancel-info {
+body.dark-theme .btn-save-note {
+  color: #091b1f;
+}
+
+.btn-cancel-note {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  padding: 0.55rem 1rem;
+  border: 1px solid var(--card-border);
+  color: var(--text-sub);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.65rem 1rem;
   border-radius: 8px;
   cursor: pointer;
 }
 
-/* ÚČASTNÍCI */
-.attendees-wrap {
+/* ÚČASTNÍCI - VELKÉ ZŘETELNÉ ŠTÍTKY */
+.attendees-container {
   margin-top: 0.2rem;
 }
 
-.attendees-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
+.attendees-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
 }
 
-.tags-box {
+.tags-wrap {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
 }
 
-.attendee-tag {
+.person-tag {
   background: var(--tag-bg);
   color: var(--tag-color);
-  font-size: 1rem; /* Zřetelná jména účastníků */
-  font-weight: 700;
-  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--tag-border);
+  font-size: 1.15rem; /* Zřetelné jméno */
+  font-weight: 800;
+  padding: 0.4rem 0.95rem;
   border-radius: 8px;
-  letter-spacing: 0.02em;
 }
 
-.no-one {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.45);
+.no-attendees {
+  font-size: 1.05rem;
+  color: var(--text-sub);
   font-style: italic;
 }
 
-/* TLAČÍTKO AKCE (PŘIHLÁŠENÍ NA VEČER) */
-.btn-toggle {
+/* VELKÉ TLAČÍTKO ÚČASTI (NA PLNÝ DOTYK) */
+.btn-toggle-attendance {
+  width: 100%;
   background: var(--primary);
-  border: 1.5px solid var(--tag-bg);
-  color: #fff;
-  font-weight: 800;
-  font-size: 1.05rem; /* Zřetelné velké tlačítko */
-  padding: 0.85rem 1.25rem;
-  border-radius: 10px;
-  cursor: pointer;
-  align-self: flex-start;
-  margin-top: 0.4rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  transition: all 0.2s ease;
-}
-
-.btn-toggle.active {
-  background: #334155;
-  border-color: #64748b;
-  color: #f1f5f9;
-}
-
-.btn-toggle:disabled {
-  opacity: 0.5;
-  cursor: wait;
-}
-
-/* Nové prvky pro sérii a detail epizody */
-.date-group {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.season-badge {
-  background: rgba(212, 175, 55, 0.2);
-  border: 1px solid var(--gold);
-  color: var(--gold-light);
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 0.15rem 0.5rem;
-  border-radius: 6px;
-  letter-spacing: 0.05em;
-}
-
-.episode-heading {
-  font-size: 1.25rem;
+  border: none;
   color: #ffffff;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
+  font-weight: 900;
+  font-size: 1.25rem; /* Velké čitelné písmo na tlačítku */
+  padding: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(18, 99, 111, 0.25);
+  margin-top: 0.4rem;
+  transition: transform 0.1s ease;
 }
 
-.synopsis-box {
-  background: rgba(8, 22, 26, 0.55);
-  border: 1px solid rgba(69, 143, 155, 0.25);
-  border-radius: 10px;
-  padding: 0.85rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  font-size: 0.95rem;
-  line-height: 1.45;
+.btn-toggle-attendance:active {
+  transform: scale(0.98);
 }
 
-.synopsis-text {
-  color: #e2e8f0;
+.btn-toggle-attendance.is-attending {
+  background: var(--bg);
+  border: 2px solid var(--card-border);
+  color: var(--text-sub);
+  box-shadow: none;
 }
 
-.meta-row {
-  color: #cbd5e1;
-  font-size: 0.9rem;
-}
-
-.meta-label {
-  color: var(--tag-bg);
-  font-weight: 700;
-}
-
-.idea-row {
-  border-top: 1px dashed rgba(255, 255, 255, 0.15);
-  padding-top: 0.45rem;
-  margin-top: 0.2rem;
-  color: #fef08a; /* Zlatavý akcent pro myšlenku k diskuzi */
-}
-
-.idea-row .meta-label {
-  color: var(--gold-light);
+body.dark-theme .btn-toggle-attendance:not(.is-attending) {
+  color: #091b1f;
 }

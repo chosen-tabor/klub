@@ -6,9 +6,9 @@
   <title>The Chosen Club Tábor</title>
   
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1d7c8a">
+  <meta name="theme-color" content="#12636f">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="The Chosen Club">
 
   <link rel="stylesheet" href="css/style.css">
@@ -16,17 +16,24 @@
 <body>
 
 <div class="container">
-  <!-- PŘIHLAŠOVACÍ OBRAZOVKA (viditelná jen pro nepřihlášené) -->
+  <!-- PŘEPÍNAČ MOTIVU (VŽDY DOSTUPNÝ V ROCHU) -->
+  <div class="top-actions">
+    <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Přepnout motiv">
+      <span id="themeIcon">🌙</span> <span id="themeLabel">Tmavý režim</span>
+    </button>
+  </div>
+
+  <!-- PŘIHLAŠOVACÍ OBRAZOVKA (PRO NEPŘIHLÁŠENÉ) -->
   <section id="loginScreen" class="login-view">
-    <div class="hero-header">
+    <header>
       <div class="subtitle">Seriál Vyvolení</div>
       <h1>THE CHOSEN</h1>
-      <div class="location-badge">Církev bratrská Tábor</div>
-    </div>
+      <div class="location-info">Církev bratrská Tábor, Bechyňská 1636/2</div>
+    </header>
 
     <div class="login-card">
       <h2>Vstup pro organizátory</h2>
-      <p class="login-desc">Pro zobrazení programu a zápis účasti se prosím přihlaste.</p>
+      <p class="login-desc">Přihlaste se prosím svým jménem a týmovým PINem.</p>
 
       <form id="loginForm">
         <div class="input-box">
@@ -46,29 +53,30 @@
     </div>
   </section>
 
-  <!-- HLAVNÍ APLIKACE (zobrazí se až po přihlášení) -->
+  <!-- HLAVNÍ APLIKACE (PO PŘIHLÁŠENÍ) -->
   <section id="appScreen" class="app-view hidden">
-    <header class="app-header">
-      <div class="header-main">
-        <div class="subtitle">Seriál Vyvolení</div>
-        <h1>THE CHOSEN</h1>
-        <div class="location-info">
-          Církev bratrská Tábor, Bechyňská 1636/2<br>
-          Středy od 18:00 (promítání & diskuze)
-        </div>
-      </div>
-      
-      <div class="user-status-bar">
-        <span class="user-greeting">Přihlášen: <strong id="loggedUserLabel"></strong></span>
-        <button id="logoutBtn" class="btn-logout">Odhlásit se</button>
+    <header>
+      <div class="subtitle">Seriál Vyvolení</div>
+      <h1>THE CHOSEN</h1>
+      <div class="location-info">
+        Církev bratrská Tábor, Bechyňská 1636/2<br>
+        Středy od 18:00 (promítání & diskuze)
       </div>
     </header>
 
-    <div class="sync-panel">
-      <span id="statusText">Načítám data...</span>
-      <button class="btn-refresh" id="refreshBtn">↻ Obnovit data</button>
+    <!-- LIŠTA PŘIHLÁŠENÉHO UŽIVATELE -->
+    <div class="user-bar">
+      <span>Přihlášen: <strong id="loggedUserLabel" class="user-name-display"></strong></span>
+      <button id="logoutBtn" class="btn-logout">Odhlásit</button>
     </div>
 
+    <!-- SYNCHRONIZACE -->
+    <div class="sync-panel">
+      <span id="statusText">Načítám data...</span>
+      <button class="btn-refresh" id="refreshBtn">↻ Obnovit</button>
+    </div>
+
+    <!-- SEZNAM KARET VEČERŮ -->
     <main class="sessions-list" id="sessionsList"></main>
   </section>
 </div>
