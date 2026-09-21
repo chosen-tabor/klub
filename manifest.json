@@ -1,0 +1,21 @@
+{
+  "name": "The Chosen Club Tábor – Organizace",
+  "short_name": "Chosen Tým",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d3b42",
+  "theme_color": "#1d7c8a",
+  "icons": [
+    {
+      "src": "https://placehold.co/192x192/1d7c8a/ffffff?text=CHOSEN",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://placehold.co/512x512/1d7c8a/ffffff?text=CHOSEN",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
