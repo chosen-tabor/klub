@@ -3,7 +3,7 @@ import { CONFIG } from './config.js';
 export const API = {
   async verifyCredentials(pin) {
     if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes("VASE_SCRIPT_ID")) {
-      return { success: true, demo: true };
+      return { success: true, role: pin === '9999' ? 'admin' : 'team', demo: true };
     }
 
     try {
@@ -13,7 +13,7 @@ export const API = {
         body: JSON.stringify({ action: 'verify', pin: pin })
       });
       const res = await response.json();
-      return { success: res.status === 'ok', message: res.message };
+      return { success: res.status === 'ok', role: res.role || 'team', message: res.message };
     } catch (err) {
       console.error('API Error verify:', err);
       return { success: false, message: 'Chyba připojení k serveru' };
@@ -39,7 +39,8 @@ export const API = {
     }
   },
 
-  async updateAttendance(dateKey, attendeesList, infoText, questionsText, pin) {
+  async updateAttendance(payload) {
+    // payload: { date, pin, attendees, info, questions, summary, idea }
     if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes("VASE_SCRIPT_ID")) {
       return { status: 'ok', demo: true };
     }
@@ -48,13 +49,7 @@ export const API = {
       const response = await fetch(CONFIG.SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          pin: pin,
-          date: dateKey,
-          attendees: attendeesList,
-          info: infoText,
-          questions: questionsText
-        })
+        body: JSON.stringify(payload)
       });
       return await response.json();
     } catch (err) {

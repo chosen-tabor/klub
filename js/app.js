@@ -20,7 +20,6 @@ const els = {
   themeLabel: document.getElementById('themeLabel')
 };
 
-// Stav otevřených editorů: { "30-9_note": true, "30-9_quest": true }
 const activeEditing = {};
 
 function initTheme() {
@@ -68,7 +67,7 @@ els.loginForm.addEventListener('submit', async (e) => {
   const check = await API.verifyCredentials(pin);
 
   if (check.success) {
-    Store.setAuth(name, pin);
+    Store.setAuth(name, pin, check.role || 'team');
     els.loginBtn.disabled = false;
     els.loginBtn.textContent = 'Vstoupit do aplikace';
     updateAuthVisibility();
@@ -92,7 +91,8 @@ function updateAuthVisibility() {
   if (Store.state.isLoggedIn) {
     els.loginScreen.classList.add('hidden');
     els.appScreen.classList.remove('hidden');
-    els.loggedUserLabel.textContent = Store.state.userName;
+    const roleBadge = Store.state.role === 'admin' ? ' (Admin)' : '';
+    els.loggedUserLabel.textContent = `${Store.state.userName}${roleBadge}`;
   } else {
     els.appScreen.classList.add('hidden');
     els.loginScreen.classList.remove('hidden');
@@ -124,8 +124,8 @@ async function handleToggleAttendance(session) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
 
-  const currentData = Store.state.sessionsData[key] || { attendees: [], info: '', questions: '' };
-  let attendees = [...currentData.attendees];
+  const currentData = Store.state.sessionsData[key] || {};
+  let attendees = [...(currentData.attendees || [])];
 
   const idx = attendees.indexOf(name);
   if (idx > -1) {
@@ -137,7 +137,15 @@ async function handleToggleAttendance(session) {
   els.statusText.textContent = 'Ukládám do tabulky...';
   render(true);
 
-  const res = await API.updateAttendance(session.dateStr, attendees, currentData.info, currentData.questions, pin);
+  const res = await API.updateAttendance({
+    date: session.dateStr,
+    pin: pin,
+    attendees: attendees,
+    info: currentData.info,
+    questions: currentData.questions,
+    summary: currentData.summary,
+    idea: currentData.idea
+  });
 
   if (res.status === 'ok' || res.demo) {
     Store.state.sessionsData[key] = { ...currentData, attendees };
@@ -153,12 +161,20 @@ async function handleToggleAttendance(session) {
 async function handleSaveNote(session, newInfoText) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
-  const currentData = Store.state.sessionsData[key] || { attendees: [], info: '', questions: '' };
+  const currentData = Store.state.sessionsData[key] || {};
 
   els.statusText.textContent = 'Ukládám organizační info...';
   render(true);
 
-  const res = await API.updateAttendance(session.dateStr, currentData.attendees, newInfoText, currentData.questions, pin);
+  const res = await API.updateAttendance({
+    date: session.dateStr,
+    pin: pin,
+    attendees: currentData.attendees,
+    info: newInfoText,
+    questions: currentData.questions,
+    summary: currentData.summary,
+    idea: currentData.idea
+  });
 
   if (res.status === 'ok' || res.demo) {
     Store.state.sessionsData[key] = { ...currentData, info: newInfoText };
@@ -175,12 +191,20 @@ async function handleSaveNote(session, newInfoText) {
 async function handleSaveQuestions(session, newQuestionsText) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
-  const currentData = Store.state.sessionsData[key] || { attendees: [], info: '', questions: '' };
+  const currentData = Store.state.sessionsData[key] || {};
 
   els.statusText.textContent = 'Ukládám otázky a myšlenky...';
   render(true);
 
-  const res = await API.updateAttendance(session.dateStr, currentData.attendees, currentData.info, newQuestionsText, pin);
+  const res = await API.updateAttendance({
+    date: session.dateStr,
+    pin: pin,
+    attendees: currentData.attendees,
+    info: currentData.info,
+    questions: newQuestionsText,
+    summary: currentData.summary,
+    idea: currentData.idea
+  });
 
   if (res.status === 'ok' || res.demo) {
     Store.state.sessionsData[key] = { ...currentData, questions: newQuestionsText };
@@ -194,20 +218,60 @@ async function handleSaveQuestions(session, newQuestionsText) {
   render();
 }
 
+async function handleSaveAdminPlot(session, newSummary, newIdea) {
+  const pin = Store.state.pin;
+  const key = `${session.day}-${session.month}`;
+  const currentData = Store.state.sessionsData[key] || {};
+
+  els.statusText.textContent = 'Ukládám upravený děj a myšlenku...';
+  render(true);
+
+  const res = await API.updateAttendance({
+    date: session.dateStr,
+    pin: pin,
+    attendees: currentData.attendees,
+    info: currentData.info,
+    questions: currentData.questions,
+    summary: newSummary,
+    idea: newIdea
+  });
+
+  if (res.status === 'ok' || res.demo) {
+    Store.state.sessionsData[key] = {
+      ...currentData,
+      summary: newSummary,
+      idea: newIdea
+    };
+    activeEditing[`${key}_plot`] = false;
+    els.statusText.textContent = 'Děj a myšlenka uloženy.';
+  } else {
+    alert('Chyba při ukládání: ' + (res.message || 'Nedostatečná oprávnění'));
+    els.statusText.textContent = 'Uložení selhalo.';
+  }
+
+  render();
+}
+
 function render(isSaving = false) {
   if (!Store.state.isLoggedIn) return;
 
   els.list.innerHTML = '';
   const currentName = Store.state.userName;
+  const isAdmin = Store.state.role === 'admin';
 
   CONFIG.SESSIONS.forEach((session) => {
     const key = `${session.day}-${session.month}`;
-    const data = Store.state.sessionsData[key] || { attendees: [], info: '', questions: '' };
-    const attendees = data.attendees;
+    const data = Store.state.sessionsData[key] || {};
+    const attendees = data.attendees || [];
     const isPresent = currentName && attendees.includes(currentName);
-    
+
+    // Pokud je v tabulce uložená upravená verze děje a myšlenky, použije se místo výchozí z configu
+    const effectiveSummary = (data.summary && data.summary.trim()) ? data.summary : session.summary;
+    const effectiveIdea = (data.idea && data.idea.trim()) ? data.idea : session.idea;
+
     const isEditingNote = !!activeEditing[`${key}_note`];
     const isEditingQuest = !!activeEditing[`${key}_quest`];
+    const isEditingPlot = !!activeEditing[`${key}_plot`];
 
     const card = document.createElement('article');
     card.className = 'session-card';
@@ -221,26 +285,46 @@ function render(isSaving = false) {
         <span class="time-tag">18:00</span>
       </div>
 
-      <h3 class="episode-title-heading">${session.episodeNumber}: ${session.title}</h3>
-      
-      <p class="summary-text">${session.summary}</p>
-
-      <p class="characters-text">
-        <strong>Hlavní postavy:</strong> ${session.characters}
-      </p>
-
-      <!-- VÝCHOZÍ MYŠLENKA Z DĚJE -->
-      <div class="discussion-idea">
-        <strong>Hlavní motiv k diskuzi:</strong>
-        ${session.idea}
+      <div class="title-with-admin">
+        <h3 class="episode-title-heading">${session.episodeNumber}: ${session.title}</h3>
+        ${isAdmin && !isEditingPlot ? `
+          <button class="btn-admin-edit" data-key="${key}_plot">✎ Upravit děj a myšlenku</button>
+        ` : ''}
       </div>
 
-      <!-- VLASTNÍ MYŠLENKY A OTÁZKY OD TÝMU -->
+      ${!isEditingPlot ? `
+        <p class="summary-text">${effectiveSummary}</p>
+
+        <p class="characters-text">
+          <strong>Hlavní postavy:</strong> ${session.characters}
+        </p>
+
+        <div class="discussion-idea">
+          <strong>Hlavní motiv k diskuzi:</strong>
+          ${effectiveIdea}
+        </div>
+      ` : `
+        <!-- ADMIN EDITOR PRO DĚJ A MYŠLENKU -->
+        <div class="admin-editor-box">
+          <label class="editor-label">Děj dílu (pro přípravu organizátorů):</label>
+          <textarea class="editor-textarea admin-summary-input" rows="4">${effectiveSummary}</textarea>
+
+          <label class="editor-label" style="margin-top: 0.5rem;">Hlavní motiv k diskuzi (pro hosty):</label>
+          <textarea class="editor-textarea admin-idea-input" rows="3">${effectiveIdea}</textarea>
+
+          <div class="editor-actions" style="margin-top: 0.5rem;">
+            <button class="btn-save-action btn-save-plot" ${isSaving ? 'disabled' : ''}>Uložit pro všechny</button>
+            <button class="btn-cancel-action btn-cancel-plot">Zrušit</button>
+          </div>
+        </div>
+      `}
+
+      <!-- VLASTNÍ OTÁZKY A POSTŘEHY OD TÝMU -->
       <div class="custom-questions-section">
         ${data.questions ? `
           <div class="questions-block">
             <div class="questions-header">
-              <span>💬 Vaše otázky a postřehy k diskuzi:</span>
+              <span>💬 Otázky a postřehy k diskuzi:</span>
               <button class="btn-edit-link" data-key="${key}_quest">Upravit</button>
             </div>
             <div class="questions-content">${data.questions.replace(/\n/g, '<br>')}</div>
@@ -256,7 +340,7 @@ function render(isSaving = false) {
         ${isEditingQuest ? `
           <div class="inline-editor">
             <label class="editor-label">Otázky a postřehy k diskuzi pro tento večer:</label>
-            <textarea class="editor-textarea" rows="3" placeholder="Např. Co vás v dílu nejvíc překvapilo? Jak vnímáte Petrovu reakci na lodi?">${data.questions || ''}</textarea>
+            <textarea class="editor-textarea" rows="3" placeholder="Otázky pro moderátora do sálu...">${data.questions || ''}</textarea>
             <div class="editor-actions">
               <button class="btn-save-action btn-save-quest" ${isSaving ? 'disabled' : ''}>Uložit do tabulky</button>
               <button class="btn-cancel-action btn-cancel-quest">Zrušit</button>
@@ -286,7 +370,7 @@ function render(isSaving = false) {
         ${isEditingNote ? `
           <div class="inline-editor">
             <label class="editor-label">Organizační poznámka:</label>
-            <textarea class="editor-textarea" rows="2" placeholder="Kdo přinese občerstvení, technika, moderování...">${data.info || ''}</textarea>
+            <textarea class="editor-textarea" rows="2" placeholder="Technika, čaj, klíče...">${data.info || ''}</textarea>
             <div class="editor-actions">
               <button class="btn-save-action btn-save-note" ${isSaving ? 'disabled' : ''}>Uložit do tabulky</button>
               <button class="btn-cancel-action btn-cancel-note">Zrušit</button>
@@ -312,9 +396,34 @@ function render(isSaving = false) {
       </button>
     `;
 
+    // Obsluha tlačítka účasti
     card.querySelector('.btn-toggle-attendance').addEventListener('click', () => handleToggleAttendance(session));
 
-    // Otevření editoru otázek
+    // Admin editace děje & myšlenky
+    const editPlotBtn = card.querySelector('.btn-admin-edit');
+    if (editPlotBtn) {
+      editPlotBtn.addEventListener('click', () => {
+        activeEditing[`${key}_plot`] = true;
+        render();
+      });
+    }
+    const savePlotBtn = card.querySelector('.btn-save-plot');
+    if (savePlotBtn) {
+      const sumArea = card.querySelector('.admin-summary-input');
+      const ideaArea = card.querySelector('.admin-idea-input');
+      savePlotBtn.addEventListener('click', () => {
+        handleSaveAdminPlot(session, sumArea.value, ideaArea.value);
+      });
+    }
+    const cancelPlotBtn = card.querySelector('.btn-cancel-plot');
+    if (cancelPlotBtn) {
+      cancelPlotBtn.addEventListener('click', () => {
+        activeEditing[`${key}_plot`] = false;
+        render();
+      });
+    }
+
+    // Obsluha otázek
     const addQuestBtn = card.querySelector('.btn-quest');
     if (addQuestBtn) {
       addQuestBtn.addEventListener('click', () => {
@@ -329,8 +438,6 @@ function render(isSaving = false) {
         render();
       });
     }
-
-    // Uložení / zrušení otázek
     const saveQuestBtn = card.querySelector('.btn-save-quest');
     if (saveQuestBtn) {
       const textarea = card.querySelector('.custom-questions-section .editor-textarea');
@@ -344,7 +451,7 @@ function render(isSaving = false) {
       });
     }
 
-    // Otevření editoru organizačního infa
+    // Obsluha organizačního infa
     const addNoteBtn = card.querySelector('.btn-note');
     if (addNoteBtn) {
       addNoteBtn.addEventListener('click', () => {
@@ -359,8 +466,6 @@ function render(isSaving = false) {
         render();
       });
     }
-
-    // Uložení / zrušení organizačního infa
     const saveNoteBtn = card.querySelector('.btn-save-note');
     if (saveNoteBtn) {
       const textarea = card.querySelector('.organizer-section .editor-textarea');

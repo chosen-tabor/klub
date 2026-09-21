@@ -2,30 +2,36 @@ export const Store = {
   state: {
     userName: localStorage.getItem('chosen_user_name') || '',
     pin: localStorage.getItem('chosen_pin') || '',
+    role: localStorage.getItem('chosen_role') || 'team', // 'team' nebo 'admin'
     isLoggedIn: false,
     sessionsData: {}
   },
 
   initAuth() {
     this.state.isLoggedIn = localStorage.getItem('chosen_logged_in') === 'true';
+    this.state.role = localStorage.getItem('chosen_role') || 'team';
   },
 
-  setAuth(name, pin) {
+  setAuth(name, pin, role = 'team') {
     this.state.userName = name.trim();
     this.state.pin = pin.trim();
+    this.state.role = role;
     this.state.isLoggedIn = true;
     localStorage.setItem('chosen_user_name', this.state.userName);
     localStorage.setItem('chosen_pin', this.state.pin);
+    localStorage.setItem('chosen_role', this.state.role);
     localStorage.setItem('chosen_logged_in', 'true');
   },
 
   logout() {
     this.state.userName = '';
     this.state.pin = '';
+    this.state.role = 'team';
     this.state.isLoggedIn = false;
     this.state.sessionsData = {};
     localStorage.removeItem('chosen_user_name');
     localStorage.removeItem('chosen_pin');
+    localStorage.removeItem('chosen_role');
     localStorage.removeItem('chosen_logged_in');
   },
 
@@ -46,12 +52,20 @@ export const Store = {
       const normKey = this.normalizeKey(key);
       if (normKey) {
         if (Array.isArray(val)) {
-          this.state.sessionsData[normKey] = { attendees: val, info: '', questions: '' };
+          this.state.sessionsData[normKey] = {
+            attendees: val,
+            info: '',
+            questions: '',
+            summary: '',
+            idea: ''
+          };
         } else {
           this.state.sessionsData[normKey] = {
             attendees: val.attendees || [],
             info: val.info || '',
-            questions: val.questions || ''
+            questions: val.questions || '',
+            summary: val.summary || '',
+            idea: val.idea || ''
           };
         }
       }
