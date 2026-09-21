@@ -1,7 +1,6 @@
 import { CONFIG } from './config.js';
 
 export const API = {
-  // Ověření PINu bez ukládání změn
   async verifyCredentials(pin) {
     if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes("VASE_SCRIPT_ID")) {
       return { success: true, demo: true };
@@ -40,7 +39,7 @@ export const API = {
     }
   },
 
-  async updateAttendance(dateKey, attendeesList, infoText, pin) {
+  async updateAttendance(dateKey, attendeesList, infoText, questionsText, pin) {
     if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes("VASE_SCRIPT_ID")) {
       return { status: 'ok', demo: true };
     }
@@ -53,7 +52,8 @@ export const API = {
           pin: pin,
           date: dateKey,
           attendees: attendeesList,
-          info: infoText
+          info: infoText,
+          questions: questionsText
         })
       });
       return await response.json();

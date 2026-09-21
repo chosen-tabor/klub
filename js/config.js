@@ -1,5 +1,4 @@
 export const CONFIG = {
-  // Zde zadejte URL vaší webové aplikace z Apps Scriptu
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxGh05H9zFIEGobntKNe0uuqjcwq9iDmYo8PWErVMlKZDc7XR2n4bnX8gypmXDt7EmeYw/exec",
   
   SESSIONS: [
@@ -10,9 +9,9 @@ export const CONFIG = {
       title: 'Zavolal jsem tě jménem',
       day: 30, month: 9, dateStr: '30.9.',
       label: 'Středa 30. 9.',
-      summary: 'V Kafarnaum se setkáváme se zdeptanou Marií Magdalénou, bojujícím rybářem Šimonem Petrem pod tlakem římských daní a farizejem Nikodémem. Ježíš nachází Marii na samém dně a proměňuje její život.',
-      characters: 'Ježíš, Marie Magdaléna (Lilith), Šimon Petr, Nikodém, Matouš',
-      idea: 'Bůh nás zná naším pravým jménem i v těch nejtemnějších chvílích. Vykoupení nezačíná naší dokonalostí, ale Božím zásahem z milosti.'
+      summary: 'Všimněte si, jak tři lidé narážejí na dno: Marie je spoutaná temnotou a alkoholem, Šimon se topí v dluzích a Nikodém zjišťuje, že naučené poučky nemají moc zachránit lidskou duši. Zlom přichází, když Ježíš vstupuje do zapadlé krčmy a Marii jednoduše osloví jejím pravým jménem. Sledujte moc Jeho přítomnosti a slova.',
+      characters: 'Ježíš, Marie Magdaléna, Šimon Petr, Nikodém, Matouš',
+      idea: 'Víra nezačíná tím, že se sami polepšíme, ale tím, že Ježíš přichází do naší temnoty a volá nás jménem. Zkušenost Jeho vysvobozující moci, která dává člověku novou identitu tam, kde už lidská síla nestačí.'
     },
     {
       season: '1. série',
@@ -20,9 +19,9 @@ export const CONFIG = {
       title: 'Šabat',
       day: 7, month: 10, dateStr: '7.10.',
       label: 'Středa 7. 10.',
-      summary: 'Různé postavy slaví židovský šabatový večer podle svých zvyků a společenského postavení. Marie Magdaléna pořádá svou vůbec první šabatovou večeři v novém životě a mezi hosty přichází nečekaný návštěvník.',
-      characters: 'Marie Magdaléna, Ježíš, Nikodém, Šimon Petr a jeho žena Eden, Matouš',
-      idea: 'Odpočinek, společenství a otevřený stůl. Šabat jako dar zastavení a přijetí pro každého bez rozdílu.'
+      summary: 'Porovnejte, jak lidé přistupují k Bohu: v domech náboženských elit je šabat chladným plněním předpisů, u Petra doma panuje úzkost z nedostatku. Naproti tomu u Marie Magdalény, která poprvé v životě prostírá stůl, usedá Ježíš. Všimněte si, jak Ježíš proměňuje náboženskou povinnost v živý vztah a pokoj.',
+      characters: 'Marie Magdaléna, Ježíš, Nikodém, Šimon Petr a Eden, Matouš',
+      idea: 'Víra jako živý vztah a pokoj u Ježíšových nohou, ne jako vyčerpávající výkon a seznam zákazů. Ježíš jako Pán pokoje, který zve každého unaveného k sobě a nabízí skutečný odpočinek duše.'
     },
     {
       season: '1. série',
@@ -30,9 +29,9 @@ export const CONFIG = {
       title: 'Ježíš miluje děti',
       day: 14, month: 10, dateStr: '14.10.',
       label: 'Středa 14. 10.',
-      summary: 'Skupinka dětí náhodou objeví Ježíšův tábor na okraji města. Ježíš s nimi tráví čas, učí je pracovat se dřevem, modlit se a odpovídá na jejich upřímné dětské otázky.',
-      characters: 'Ježíš, Abigail a skupina místních dětí',
-      idea: 'Dětská čistá víra, důvěra a Ježíšova laskavá přístupnost. Kdo nepřijme království jako dítě, nevejde do něj.'
+      summary: 'Děti objeví Ježíšův skromný tábor a On si na ně udělá čas několik dní za sebou. Sledujte, jak jim Ježíš trpělivě a s láskou zjevuje Boží charakter, učí je Otčenáš a odpovídá na jejich čisté otázky o Bohu. Připravuje si je i jako svědky své lásky.',
+      characters: 'Ježíš, Abigail a místní děti',
+      idea: 'Co znamená Ježíšovo slovo: „Kdo nepřijme Boží království jako dítě, vůbec do něho nevejde“? Prostá, důvěřivá víra, která se nebojí přistoupit k Bohu s otevřeným srdcem a bez dospělácké pýchy a skepticismu.'
     },
     {
       season: '1. série',
@@ -40,20 +39,20 @@ export const CONFIG = {
       title: 'Skála',
       day: 21, month: 10, dateStr: '21.10.',
       label: 'Středa 21. 10.',
-      summary: 'Šimon Petr je v bezvýchodné situaci kvůli dluhům a hrozí mu vězení. Po celé noci marného rybolovu se na břehu objevuje Ježíš a posílá ho znovu na hlubinu – přichází zázračný rybolov.',
-      characters: 'Šimon Petr, Ondřej, Ježíš, Jan, Jakub, Jan Křtitel',
-      idea: 'Když dojdou naše lidské síly a strategie selžou, Boží povolání proměňuje beznaděj v nový směr a důvěru.'
+      summary: 'Šimon prožije noc naprostého selhání – dřel celou noc, sítě jsou prázdné a hrozí mu vězení. Když mu Ježíš řekne, aby jel znovu na hlubinu za bílého dne, Šimon pochybuje, ale poslechne. Zázračný lov ryb vede Petra k okamžitému pádu na kolena před Ježíšovou svatostí a k opuštění všeho.',
+      characters: 'Šimon Petr, Ondřej, Ježíš, Jan a Jakub',
+      idea: 'Okamžik, kdy víra znamená poslechnout Ježíše na Jeho slovo, i když všechno kolem říká pravý opak. Uvědomění si, kdo Ježíš doopravdy je – a ochota odevzdat Mu kormidlo celého svého života.'
     },
-    // (Středa 28.10. se nekoná – státní svátek)
+    // 28. 10. vynecháno (státní svátek)
     {
       season: '1. série',
       episodeNumber: '5. díl',
       title: 'Svatební dar',
       day: 4, month: 11, dateStr: '4.11.',
       label: 'Středa 4. 11.',
-      summary: 'Ježíš s učedníky přichází na svatbu v Káně Galilejské. Když dojde víno, což by znamenalo obrovskou rodinnou hanbu, Marie požádá svého syna o pomoc. Ježíš koná svůj první veřejný zázrak.',
-      characters: 'Ježíš, Marie (matka Ježíšova), Tomáš, Ráma, Šimon Petr',
-      idea: 'Ježíš sdílí lidskou radost a vstupuje do zdánlivě obyčejných lidských starostí. Boží hojnost tam, kde člověku došlo to nejlepší.'
+      summary: 'Svatba v Káně. Všimněte si důvěry Ježíšovy matky Marie: „Udělejte cokoli, co vám řekne.“ Ježíš nepředvádí senzaci před davem, ale skrytě proměňuje obyčejnou vodu na vybrané víno. První veřejné zjevení Jeho božské moci a slávy, které upevňuje víru prvních učedníků.',
+      characters: 'Ježíš, Marie (matka), Tomáš, Ráma, Šimon Petr',
+      idea: 'Důvěra, že Ježíš přináší hojnost tam, kde nám došly všechny síly i radost. Zázrak proměny obyčejné vody ve víno jako obraz toho, jak Ježíš dokáže vzít to nejobyčejnější a proměnit to v něco nového a čistého.'
     },
     {
       season: '1. série',
@@ -61,9 +60,9 @@ export const CONFIG = {
       title: 'Nevýslovný soucit',
       day: 11, month: 11, dateStr: '11.11.',
       label: 'Středa 11. 11.',
-      summary: 'V Kafarnaum Ježíš uzdravuje malomocného přímo na cestě dotykem, který překračuje náboženské tabu. Později v přeplněném domě přátelé proboří střechu, aby spustili ochrnutého muže.',
-      characters: 'Ježíš, malomocný, ochrnutý a jeho přátelé, Nikodém, Matouš',
-      idea: 'Boží soucit se nebojí naší nečistoty a bolesti. Odpuštění hříchů a uzdravení jako projev svrchované autority.'
+      summary: 'Dva zásadní momenty: dotek malomocného, kde Ježíš ukazuje, že Jeho čistota pohlcuje lidskou nečistotu a nemoc. A scéna s ochrnutým, kterého přátelé spustí střechou. Všimněte si, že Ježíš nejdřív odpouští hříchy a až poté uzdravuje tělo, čímž veřejně zjevuje svou autoritu Boha.',
+      characters: 'Ježíš, malomocný, ochrnutý a jeho přátelé, Matouš',
+      idea: 'Víra, která se nezastaví před žádnou překážkou, aby člověka přivedla k Ježíši. A Ježíšovo odpuštění hříchů jako to nejhlubší uzdravení, které lidská duše potřebuje víc než cokoliv jiného.'
     },
     {
       season: '1. série',
@@ -71,9 +70,9 @@ export const CONFIG = {
       title: 'Pozvánky',
       day: 18, month: 11, dateStr: '18.11.',
       label: 'Středa 18. 11.',
-      summary: 'Hluboký noční rozhovor mezi Ježíšem a váženým učitelem Nikodémem o novém narození z Ducha. Zároveň Ježíš překvapivě oslovuje a volá Matouše, opovrhovaného výběrčího daní.',
-      characters: 'Ježíš, Nikodém, Matouš, Šimon Petr, Gaius',
-      idea: 'Znovuzrození z Ducha svatého. Bůh se dívá na srdce a volá i ty, které společnost i náboženské elity odepsaly.'
+      summary: 'Noční rozhovor s Nikodémem o novém narození z Ducha: ani celoživotní zbožnost a znalost Písma člověka nespasí bez pokání a víry v Syna člověka. V kontrastu k tomu stojí scéna u celnice: Ježíš volá Matouše – hříšníka a zrádce. Dvě slova „Pojď za mnou“ a Matouš bez váhání nechává své bohatství za sebou.',
+      characters: 'Ježíš, Nikodém, Matouš, Šimon Petr, voják Gaius',
+      idea: 'K Ježíši nemůžeme přijít na základě vlastních zásluh – i ten nejzbožnější se musí „znovu narodit“. A nikdo není příliš zatvrzelý ani hříšný, aby ho Ježíšovo milosrdenství nemohlo proměnit.'
     },
     {
       season: '1. série',
@@ -81,9 +80,9 @@ export const CONFIG = {
       title: 'Jsem to já',
       day: 25, month: 11, dateStr: '25.11.',
       label: 'Středa 25. 11.',
-      summary: 'Finále první série. Ježíš se svou skupinou prochází přes Samařsko. U Jákobovy studny se setkává se samařskou ženou s pohnutou minulostí a poprvé otevřeně vyjevuje, kým skutečně je.',
-      characters: 'Ježíš, Samařská žena (Fótina), Šimon Petr, učedníci',
-      idea: 'Živá voda pro žíznící duši. Boží láska boří etnické, kulturní i morální předsudky a zahanbení.'
+      summary: 'Ježíš u Jákobovy studny záměrně čeká na samařskou ženu, která přichází v poledne s těžkým džbánem i minulostí. Odhaluje její hřích ne proto, aby ji zahanbil, ale aby jí nabídl „živou vodu“ Ducha svatého. Poprvé naplno a přímo vyznává: „Já jsem Mesiáš.“ Žena uvěří a běží svědčit celému městu.',
+      characters: 'Ježíš, Samařská žena Fótina, apoštolové',
+      idea: 'Žízeň lidského srdce, kterou neuhasí žádný vztah, majetek ani zážitek. Ježíš jako zdroj živé vody a jediný zachránce, který zná celou naši pravdu, nabízí odpuštění a posílá nás nést tuto zprávu dál.'
     },
 
     // --- 2. SÉRIE ---
@@ -93,9 +92,9 @@ export const CONFIG = {
       title: 'Hrom',
       day: 2, month: 12, dateStr: '2.12.',
       label: 'Středa 2. 12.',
-      summary: 'Učedníci působí v Samařsku a učí se vzájemně vycházet. Bratři Jakub a Jan projevují horkokrevnost a chtějí na odmítavé Samařany seslat oheň z nebe, za což si vyslouží přezdívku Synové hromu.',
-      characters: 'Ježíš, Jan, Jakub (Synové hromu), Šimon Petr, Samařané',
-      idea: 'Cesta lásky a služby místo pomsty a nadřazenosti. Zlomit kruh nenávisti evangeliem smíření.'
+      summary: 'Učedníci chtějí na odmítavé Samařany povolat oheň z nebe. Sledujte, jak jim Ježíš ukazuje podstatu své mise: nepřišel lidi hubit, ale zachránit. Ukazuje jim, že následování Ho neznamená získat moc nad nepřáteli, ale mít lásku, která odpouští a překonává nenávist.',
+      characters: 'Ježíš, Jan, Jakub (Synové hromu), Šimon Petr',
+      idea: 'Jak snadno si pleteme horlivost pro Boha s vlastní pomstychtivostí a pýchou. Následovat Ježíše znamená přijmout Jeho kříž, odložit meč a učit se milovat i ty, kteří nás odmítají.'
     },
     {
       season: '2. série',
@@ -103,9 +102,9 @@ export const CONFIG = {
       title: 'Viděl jsem tě',
       day: 9, month: 12, dateStr: '9.12.',
       label: 'Středa 9. 12.',
-      summary: 'Architekt Natanael zažívá profesní i osobní krach a v zoufalství pláče pod fíkovníkem. Filip ho přivádí k Ježíši, který Natanaela šokuje tím, že o něm ví všechno ještě dříve, než se potkali.',
-      characters: 'Ježíš, Natanael, Filip, Matouš, Marie Magdaléna',
-      idea: '„Viděl jsem tě pod fíkovníkem.“ Bůh nás vidí i v našich nejskrytějších krizích a volá nás bez přetvářky.'
+      summary: 'Natanael prožívá hlubokou skepsi a zoufalství, když se mu zhroutí životní dílo. V samotě pod stromem volá k Bohu. Filip ho zve: „Pojď a viz!“ Když Ježíš řekne „Viděl jsem tě pod fíkovníkem“, Natanael poznává, že před ním stojí vševědoucí Boží Syn, a okamžitě vyznává víru.',
+      characters: 'Ježíš, Natanael, Filip, Matouš',
+      idea: '„Pojď a přesvědč se sám.“ Bůh o nás ví dřív, než k Němu zavoláme, a vidí každou naši tajnou slzu. Osobní setkání s Ježíšem, které boří veškerou skepsi a vede k jistotě víry.'
     },
     {
       season: '2. série',
@@ -113,9 +112,9 @@ export const CONFIG = {
       title: 'Matthew 4:24',
       day: 16, month: 12, dateStr: '16.12.',
       label: 'Středa 16. 12.',
-      summary: 'Zatímco Ježíš do noci neúnavně uzdravuje zástupy nemocných, učedníci sedí u ohně, řeší své osobní spory, rozdílné povahy a minulost. Závěr přináší silný pohled na vyčerpaného, sloužícího Ježíše.',
+      summary: 'Učedníci se u ohně hádají a řeší své staré rány, zatímco Ježíš celou noc neúnavně slouží a vkládá ruce na nemocné a posedlé. Finále, kdy se Ježíš vrací vyčerpaný do stanu a Jeho matka Marie Mu myje zraněné nohy, učedníky zahanbí a sjednotí v hluboké bázni před Jeho obětí.',
       characters: 'Ježíš, Marie (matka), Šimon Petr, Matouš, Ondřej, Marie Magdaléna',
-      idea: 'Sloužící a obětující se Kristus. Jak se různorodá skupina nedokonalých lidí učí spolu žít a sloužit vyššímu cíli.'
+      idea: 'Pohled na sloužícího Krista, který na sebe vzal naše nemoci a bolesti. Jak naše spory, sobectví a pýcha blednou ve světle Jeho oběti a lásky, která se pro nás cele vydává.'
     }
   ]
 };

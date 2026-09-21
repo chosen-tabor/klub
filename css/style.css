@@ -534,3 +534,134 @@ body.dark-theme .btn-save-note {
 body.dark-theme .btn-toggle-attendance:not(.is-attending) {
   color: #091b1f;
 }
+
+/* BLOK PRO OTÁZKY A MYŠLENKY K DISKUZI */
+.custom-questions-section {
+  margin-top: 0.2rem;
+}
+
+.questions-block {
+  background: var(--accent-gold-bg);
+  border-left: 4px solid var(--accent-gold);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.questions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+  margin-bottom: 0.35rem;
+}
+
+.questions-content {
+  font-size: 1.08rem;
+  color: var(--text-main);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* SPOLEČNÉ STYLY PRO ODKAZY A TLAČÍTKA */
+.btn-edit-link {
+  background: transparent;
+  border: none;
+  color: var(--accent-gold);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.btn-action-outline {
+  background: transparent;
+  border: 2px dashed var(--card-border);
+  color: var(--text-sub);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: all 0.15s ease;
+}
+
+.btn-action-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-quest {
+  border-color: rgba(180, 83, 9, 0.4);
+  color: var(--accent-gold);
+}
+
+.btn-quest:hover {
+  border-color: var(--accent-gold);
+  background: var(--accent-gold-bg);
+}
+
+/* UNIVERZÁLNÍ EDITOR */
+.inline-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--bg);
+  padding: 0.9rem;
+  border-radius: 12px;
+}
+
+.editor-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.editor-textarea {
+  width: 100%;
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 10px;
+  color: var(--text-main);
+  padding: 0.85rem;
+  font-size: 1.1rem;
+  line-height: 1.45;
+  resize: vertical;
+  outline: none;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.btn-save-action {
+  background: var(--primary);
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 0.65rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+body.dark-theme .btn-save-action {
+  color: #091b1f;
+}
+
+.btn-cancel-action {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--text-sub);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}

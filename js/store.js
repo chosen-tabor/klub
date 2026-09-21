@@ -7,7 +7,7 @@ export const Store = {
   },
 
   initAuth() {
-    this.state.isLoggedIn = !!(this.state.userName && this.state.pin);
+    this.state.isLoggedIn = localStorage.getItem('chosen_logged_in') === 'true';
   },
 
   setAuth(name, pin) {
@@ -16,6 +16,7 @@ export const Store = {
     this.state.isLoggedIn = true;
     localStorage.setItem('chosen_user_name', this.state.userName);
     localStorage.setItem('chosen_pin', this.state.pin);
+    localStorage.setItem('chosen_logged_in', 'true');
   },
 
   logout() {
@@ -25,6 +26,7 @@ export const Store = {
     this.state.sessionsData = {};
     localStorage.removeItem('chosen_user_name');
     localStorage.removeItem('chosen_pin');
+    localStorage.removeItem('chosen_logged_in');
   },
 
   normalizeKey(rawDate) {
@@ -44,11 +46,12 @@ export const Store = {
       const normKey = this.normalizeKey(key);
       if (normKey) {
         if (Array.isArray(val)) {
-          this.state.sessionsData[normKey] = { attendees: val, info: '' };
+          this.state.sessionsData[normKey] = { attendees: val, info: '', questions: '' };
         } else {
           this.state.sessionsData[normKey] = {
             attendees: val.attendees || [],
-            info: val.info || ''
+            info: val.info || '',
+            questions: val.questions || ''
           };
         }
       }
