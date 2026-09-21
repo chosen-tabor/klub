@@ -249,9 +249,32 @@ function render(isSaving = false) {
   });
 }
 
-// Service worker
+// Automatické vnucení a reload při aktualizaci Service Workeru
 if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('./sw.js').catch(console.error);
+  navigator.serviceWorker.register('./sw.js').then((reg) => {
+    // Ručně zkontroluje, zda na serveru není novější sw.js
+    reg.update();
+
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      newWorker.addEventListener('statechange', () => {
+        // Jakmile se nový SW nainstaloval a starý už ovládal stránku -> reload
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          console.log('Nalezena nová verze PWA. Obnovuji stránku...');
+          window.location.reload();
+        }
+      });
+    });
+  }).catch(console.error);
+
+  // Pojistka: reload při změně controlleru
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
 }
 
 // Pokud už byl uživatel přihlášený v mezipaměti, rovnou stáhneme data
