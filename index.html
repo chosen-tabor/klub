@@ -16,32 +16,61 @@
 <body>
 
 <div class="container">
-  <header>
-    <div class="subtitle">Seriál Vyvolení</div>
-    <h1>The CHOSEN</h1>
-    <div class="location-info">
-      Církev bratrská Tábor, Bechyňská 1636/2<br>
-      Středy od 18:00 (promítání & interaktivní diskuze)
+  <!-- PŘIHLAŠOVACÍ OBRAZOVKA (viditelná jen pro nepřihlášené) -->
+  <section id="loginScreen" class="login-view">
+    <div class="hero-header">
+      <div class="subtitle">Seriál Vyvolení</div>
+      <h1>THE CHOSEN</h1>
+      <div class="location-badge">Církev bratrská Tábor</div>
     </div>
-  </header>
 
-  <div class="identity-card">
-    <div class="input-box">
-      <label for="userName">Moje Jméno</label>
-      <input type="text" id="userName" placeholder="Např. Michal">
+    <div class="login-card">
+      <h2>Vstup pro organizátory</h2>
+      <p class="login-desc">Pro zobrazení programu a zápis účasti se prosím přihlaste.</p>
+
+      <form id="loginForm">
+        <div class="input-box">
+          <label for="loginName">Tvoje jméno</label>
+          <input type="text" id="loginName" placeholder="Např. Michal" required autocomplete="name">
+        </div>
+
+        <div class="input-box">
+          <label for="loginPin">Týmový PIN</label>
+          <input type="password" id="loginPin" maxlength="8" placeholder="••••" required autocomplete="current-password">
+        </div>
+
+        <div id="loginError" class="login-error hidden"></div>
+
+        <button type="submit" id="loginBtn" class="btn-submit">Vstoupit do aplikace</button>
+      </form>
     </div>
-    <div class="input-box" style="max-width: 120px;">
-      <label for="userPin">Týmový PIN</label>
-      <input type="password" id="userPin" maxlength="8" placeholder="****">
+  </section>
+
+  <!-- HLAVNÍ APLIKACE (zobrazí se až po přihlášení) -->
+  <section id="appScreen" class="app-view hidden">
+    <header class="app-header">
+      <div class="header-main">
+        <div class="subtitle">Seriál Vyvolení</div>
+        <h1>THE CHOSEN</h1>
+        <div class="location-info">
+          Církev bratrská Tábor, Bechyňská 1636/2<br>
+          Středy od 18:00 (promítání & diskuze)
+        </div>
+      </div>
+      
+      <div class="user-status-bar">
+        <span class="user-greeting">Přihlášen: <strong id="loggedUserLabel"></strong></span>
+        <button id="logoutBtn" class="btn-logout">Odhlásit se</button>
+      </div>
+    </header>
+
+    <div class="sync-panel">
+      <span id="statusText">Načítám data...</span>
+      <button class="btn-refresh" id="refreshBtn">↻ Obnovit data</button>
     </div>
-  </div>
 
-  <div class="sync-panel">
-    <span id="statusText">Načítám data...</span>
-    <button class="btn-refresh" id="refreshBtn">↻ Obnovit</button>
-  </div>
-
-  <main class="sessions-list" id="sessionsList"></main>
+    <main class="sessions-list" id="sessionsList"></main>
+  </section>
 </div>
 
 <script type="module" src="js/app.js"></script>

@@ -2,20 +2,31 @@ export const Store = {
   state: {
     userName: localStorage.getItem('chosen_user_name') || '',
     pin: localStorage.getItem('chosen_pin') || '',
-    sessionsData: {} // Formát: { "30-9": { attendees: [...], info: "" } }
+    isLoggedIn: false,
+    sessionsData: {}
   },
 
-  setUserName(name) {
+  initAuth() {
+    this.state.isLoggedIn = !!(this.state.userName && this.state.pin);
+  },
+
+  setAuth(name, pin) {
     this.state.userName = name.trim();
-    localStorage.setItem('chosen_user_name', this.state.userName);
-  },
-
-  setPin(pin) {
     this.state.pin = pin.trim();
+    this.state.isLoggedIn = true;
+    localStorage.setItem('chosen_user_name', this.state.userName);
     localStorage.setItem('chosen_pin', this.state.pin);
   },
 
-  // Normalizuje datum (např. "30.9.", "30. 9.", "2026-09-30") na klíč "30-9"
+  logout() {
+    this.state.userName = '';
+    this.state.pin = '';
+    this.state.isLoggedIn = false;
+    this.state.sessionsData = {};
+    localStorage.removeItem('chosen_user_name');
+    localStorage.removeItem('chosen_pin');
+  },
+
   normalizeKey(rawDate) {
     if (!rawDate) return null;
     const czMatch = String(rawDate).match(/^(\d{1,2})\.\s*(\d{1,2})/);
