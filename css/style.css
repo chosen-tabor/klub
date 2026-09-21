@@ -1,0 +1,254 @@
+:root {
+  --primary: #1d7c8a;         /* Tyrkysová z plakátu */
+  --primary-dark: #124d56;
+  --bg-gradient: linear-gradient(180deg, #11343a 0%, #0d252a 100%);
+  --gold: #d4af37;            /* Zlatá pro nápis Vyvolení */
+  --gold-light: #fef08a;
+  --card-bg: rgba(23, 67, 75, 0.65);
+  --card-border: rgba(69, 143, 155, 0.35);
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --tag-bg: #2dd4bf;
+  --tag-color: #042f2e;
+  --radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+body {
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding: 1.2rem 0.8rem 4rem;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Hlavička inspirovaná plakátkem */
+header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+}
+
+.subtitle {
+  color: var(--gold-light);
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--text-main);
+  margin: 0.2rem 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.location-info {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Přihlašovací lišta identity */
+.identity-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+.input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 140px;
+}
+
+.input-box label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.input-box input {
+  background: rgba(13, 37, 42, 0.8);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.input-box input:focus {
+  border-color: var(--tag-bg);
+}
+
+/* Status a obnovení */
+.sync-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  padding: 0 0.2rem;
+}
+
+.btn-refresh {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+}
+
+/* Karty večerů */
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.session-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.date-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+.time-badge {
+  font-size: 0.8rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.episode-detail h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.2rem;
+}
+
+.episode-detail p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Poznámky a info k večeru */
+.info-section {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 0.6rem;
+}
+
+.info-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  font-weight: bold;
+}
+
+.info-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+/* Účastníci */
+.attendees-wrap {
+  margin-top: 0.2rem;
+}
+
+.attendees-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.tags-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.attendee-tag {
+  background: var(--tag-bg);
+  color: var(--tag-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+}
+
+.no-one {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+/* Tlačítko akce */
+.btn-toggle {
+  background: var(--primary);
+  border: 1px solid var(--tag-bg);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle.active {
+  background: #334155;
+  border-color: #64748b;
+  color: #e2e8f0;
+}
+
+.btn-toggle:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
