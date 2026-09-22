@@ -6,7 +6,7 @@ export const CONFIG = {
     {
       season: '1. série',
       episodeNumber: '1. díl',
-      title: 'Zavolal jsem tě jménem',
+      title: 'Znám tě jménem',
       day: 30, month: 9, dateStr: '30.9.',
       label: 'Středa 30. 9.',
       summary: 'Kafarnaum, 26 n. l. Marie Magdalena, zvaná Lilith, je sužována zlými démony. Rybáři Ondřej a Šimon se topí v dluzích na římských daních a hrozí jim vězení. Výběrčí daní Matouš trpí opovržením vlastního národa. Učený rabín Nikodém je přivolán k Lilith, ale jeho pokus o exorcismus selže. Zlom nastává v taverně v Červené čtvrti, kde Ježíš Marii osloví jejím pravým jménem a uzdraví ji.',

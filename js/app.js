@@ -20,8 +20,12 @@ const els = {
   themeLabel: document.getElementById('themeLabel')
 };
 
+// Stav otevřených editorů
 const activeEditing = {};
 
+// ==========================================
+// SPRÁVA TÉMAT (SVĚTLÉ / TMAVÉ)
+// ==========================================
 function initTheme() {
   const savedTheme = localStorage.getItem('chosen_theme') || 'light';
   if (savedTheme === 'dark') {
@@ -50,6 +54,9 @@ els.themeToggleBtn.addEventListener('click', () => {
 
 initTheme();
 
+// ==========================================
+// PŘIHLAŠOVÁNÍ & AUTENTIZACE
+// ==========================================
 Store.initAuth();
 updateAuthVisibility();
 
@@ -102,6 +109,9 @@ function updateAuthVisibility() {
   }
 }
 
+// ==========================================
+// SYNCHRONIZACE DAT
+// ==========================================
 async function syncData() {
   if (!Store.state.isLoggedIn) return;
 
@@ -119,6 +129,9 @@ async function syncData() {
   render();
 }
 
+// ==========================================
+// ZÁPISY DO TABULKY
+// ==========================================
 async function handleToggleAttendance(session) {
   const name = Store.state.userName;
   const pin = Store.state.pin;
@@ -140,6 +153,7 @@ async function handleToggleAttendance(session) {
   const res = await API.updateAttendance({
     date: session.dateStr,
     pin: pin,
+    title: currentData.title,
     attendees: attendees,
     info: currentData.info,
     questions: currentData.questions,
@@ -169,6 +183,7 @@ async function handleSaveNote(session, newInfoText) {
   const res = await API.updateAttendance({
     date: session.dateStr,
     pin: pin,
+    title: currentData.title,
     attendees: currentData.attendees,
     info: newInfoText,
     questions: currentData.questions,
@@ -199,6 +214,7 @@ async function handleSaveQuestions(session, newQuestionsText) {
   const res = await API.updateAttendance({
     date: session.dateStr,
     pin: pin,
+    title: currentData.title,
     attendees: currentData.attendees,
     info: currentData.info,
     questions: newQuestionsText,
@@ -218,17 +234,19 @@ async function handleSaveQuestions(session, newQuestionsText) {
   render();
 }
 
-async function handleSaveAdminPlot(session, newSummary, newIdea) {
+// Uložení Názvu, Děje a Myšlenky (Admin)
+async function handleSaveAdminPlot(session, newTitle, newSummary, newIdea) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
   const currentData = Store.state.sessionsData[key] || {};
 
-  els.statusText.textContent = 'Ukládám upravený děj a myšlenku...';
+  els.statusText.textContent = 'Ukládám upravený název, děj a myšlenku...';
   render(true);
 
   const res = await API.updateAttendance({
     date: session.dateStr,
     pin: pin,
+    title: newTitle,
     attendees: currentData.attendees,
     info: currentData.info,
     questions: currentData.questions,
@@ -239,11 +257,12 @@ async function handleSaveAdminPlot(session, newSummary, newIdea) {
   if (res.status === 'ok' || res.demo) {
     Store.state.sessionsData[key] = {
       ...currentData,
+      title: newTitle,
       summary: newSummary,
       idea: newIdea
     };
     activeEditing[`${key}_plot`] = false;
-    els.statusText.textContent = 'Děj a myšlenka uloženy.';
+    els.statusText.textContent = 'Změny byly uloženy do tabulky.';
   } else {
     alert('Chyba při ukládání: ' + (res.message || 'Nedostatečná oprávnění'));
     els.statusText.textContent = 'Uložení selhalo.';
@@ -252,6 +271,9 @@ async function handleSaveAdminPlot(session, newSummary, newIdea) {
   render();
 }
 
+// ==========================================
+// VYKRESLOVÁNÍ KARET (RENDER)
+// ==========================================
 function render(isSaving = false) {
   if (!Store.state.isLoggedIn) return;
 
@@ -265,7 +287,8 @@ function render(isSaving = false) {
     const attendees = data.attendees || [];
     const isPresent = currentName && attendees.includes(currentName);
 
-    // Pokud je v tabulce uložená upravená verze děje a myšlenky, použije se místo výchozí z configu
+    // Priorita dat z tabulky: pokud je v tabulce text, použije se, jinak výchozí z config.js
+    const effectiveTitle = (data.title && data.title.trim()) ? data.title : session.title;
     const effectiveSummary = (data.summary && data.summary.trim()) ? data.summary : session.summary;
     const effectiveIdea = (data.idea && data.idea.trim()) ? data.idea : session.idea;
 
@@ -286,9 +309,9 @@ function render(isSaving = false) {
       </div>
 
       <div class="title-with-admin">
-        <h3 class="episode-title-heading">${session.episodeNumber}: ${session.title}</h3>
+        <h3 class="episode-title-heading">${session.episodeNumber}: ${effectiveTitle}</h3>
         ${isAdmin && !isEditingPlot ? `
-          <button class="btn-admin-edit" data-key="${key}_plot">✎ Upravit děj a myšlenku</button>
+          <button class="btn-admin-edit" data-key="${key}_plot">✎ Upravit texty dílu</button>
         ` : ''}
       </div>
 
@@ -304,22 +327,25 @@ function render(isSaving = false) {
           ${effectiveIdea}
         </div>
       ` : `
-        <!-- ADMIN EDITOR PRO DĚJ A MYŠLENKU -->
+        <!-- ADMIN FORMULÁŘ: NÁZEV, DĚJ A MYŠLENKA -->
         <div class="admin-editor-box">
-          <label class="editor-label">Děj dílu (pro přípravu organizátorů):</label>
-          <textarea class="editor-textarea admin-summary-input" rows="4">${effectiveSummary}</textarea>
+          <label class="editor-label">Název dílu:</label>
+          <input type="text" class="editor-textarea admin-title-input" value="${effectiveTitle}">
 
-          <label class="editor-label" style="margin-top: 0.5rem;">Hlavní motiv k diskuzi (pro hosty):</label>
+          <label class="editor-label" style="margin-top: 0.6rem;">Děj dílu (podle Wikipedie):</label>
+          <textarea class="editor-textarea admin-summary-input" rows="5">${effectiveSummary}</textarea>
+
+          <label class="editor-label" style="margin-top: 0.6rem;">Hlavní motiv k diskuzi (pro hosty):</label>
           <textarea class="editor-textarea admin-idea-input" rows="3">${effectiveIdea}</textarea>
 
-          <div class="editor-actions" style="margin-top: 0.5rem;">
+          <div class="editor-actions" style="margin-top: 0.6rem;">
             <button class="btn-save-action btn-save-plot" ${isSaving ? 'disabled' : ''}>Uložit pro všechny</button>
             <button class="btn-cancel-action btn-cancel-plot">Zrušit</button>
           </div>
         </div>
       `}
 
-      <!-- VLASTNÍ OTÁZKY A POSTŘEHY OD TÝMU -->
+      <!-- VLASTNÍ OTÁZKY A POSTŘEHY K DISKUZI -->
       <div class="custom-questions-section">
         ${data.questions ? `
           <div class="questions-block">
@@ -339,7 +365,7 @@ function render(isSaving = false) {
 
         ${isEditingQuest ? `
           <div class="inline-editor">
-            <label class="editor-label">Otázky a postřehy k diskuzi pro tento večer:</label>
+            <label class="editor-label">Otázky k diskuzi:</label>
             <textarea class="editor-textarea" rows="3" placeholder="Otázky pro moderátora do sálu...">${data.questions || ''}</textarea>
             <div class="editor-actions">
               <button class="btn-save-action btn-save-quest" ${isSaving ? 'disabled' : ''}>Uložit do tabulky</button>
@@ -379,7 +405,7 @@ function render(isSaving = false) {
         ` : ''}
       </div>
 
-      <!-- ÚČASTNÍCI -->
+      <!-- ÚČASTNÍCI ORGANIZAČNÍHO TÝMU -->
       <div class="attendees-container">
         <div class="attendees-title">Organizační tým (${attendees.length}):</div>
         <div class="tags-wrap">
@@ -396,10 +422,10 @@ function render(isSaving = false) {
       </button>
     `;
 
-    // Obsluha tlačítka účasti
+    // Obsluha kliknutí na účast
     card.querySelector('.btn-toggle-attendance').addEventListener('click', () => handleToggleAttendance(session));
 
-    // Admin editace děje & myšlenky
+    // Admin: otevření / uložení / zrušení editace textů dílu
     const editPlotBtn = card.querySelector('.btn-admin-edit');
     if (editPlotBtn) {
       editPlotBtn.addEventListener('click', () => {
@@ -409,10 +435,11 @@ function render(isSaving = false) {
     }
     const savePlotBtn = card.querySelector('.btn-save-plot');
     if (savePlotBtn) {
+      const titleInput = card.querySelector('.admin-title-input');
       const sumArea = card.querySelector('.admin-summary-input');
       const ideaArea = card.querySelector('.admin-idea-input');
       savePlotBtn.addEventListener('click', () => {
-        handleSaveAdminPlot(session, sumArea.value, ideaArea.value);
+        handleSaveAdminPlot(session, titleInput.value, sumArea.value, ideaArea.value);
       });
     }
     const cancelPlotBtn = card.querySelector('.btn-cancel-plot');
@@ -423,7 +450,7 @@ function render(isSaving = false) {
       });
     }
 
-    // Obsluha otázek
+    // Obsluha otázek k diskuzi
     const addQuestBtn = card.querySelector('.btn-quest');
     if (addQuestBtn) {
       addQuestBtn.addEventListener('click', () => {
@@ -483,6 +510,7 @@ function render(isSaving = false) {
   });
 }
 
+// Service worker reload
 if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('./sw.js').then((reg) => {
     reg.update();

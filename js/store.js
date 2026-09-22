@@ -51,23 +51,14 @@ export const Store = {
     for (const [key, val] of Object.entries(rawData)) {
       const normKey = this.normalizeKey(key);
       if (normKey) {
-        if (Array.isArray(val)) {
-          this.state.sessionsData[normKey] = {
-            attendees: val,
-            info: '',
-            questions: '',
-            summary: '',
-            idea: ''
-          };
-        } else {
-          this.state.sessionsData[normKey] = {
-            attendees: val.attendees || [],
-            info: val.info || '',
-            questions: val.questions || '',
-            summary: val.summary || '',
-            idea: val.idea || ''
-          };
-        }
+        this.state.sessionsData[normKey] = {
+          title: val.title || '',
+          attendees: val.attendees || [],
+          info: val.info || '',
+          questions: val.questions || '',
+          summary: val.summary || '',
+          idea: val.idea || ''
+        };
       }
     }
   }
