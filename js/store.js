@@ -74,8 +74,7 @@ export const Store = {
     return str;
   },
 
-  // Načtení řádků z Google Tabulky a jejich sloučení do stavu
-  loadSheetData(rows) {
+loadSheetData(rows) {
     if (!Array.isArray(rows)) return;
 
     rows.forEach(row => {
@@ -86,15 +85,15 @@ export const Store = {
 
       this.state.sessionsData[key] = {
         ...existing,
-        // Texty z tabulky mají přednost
-        title: (row.title && row.title.trim()) ? row.title : existing.title,
-        attendees: Array.isArray(row.attendees) ? row.attendees : existing.attendees || [],
-        info: row.info !== undefined ? row.info : existing.info || '',
-        questions: row.questions !== undefined ? row.questions : existing.questions || '',
-        summary: (row.summary && row.summary.trim()) ? row.summary : existing.summary,
-        idea: (row.idea && row.idea.trim()) ? row.idea : existing.idea,
-        ideas: row.ideas !== undefined ? row.ideas : existing.ideas || '',
-        prayers: row.prayers !== undefined ? row.prayers : existing.prayers || ''
+        title: (row.title && row.title.trim()) ? row.title : (existing.title || ''),
+        attendees: (Array.isArray(row.attendees) && row.attendees.length > 0) ? row.attendees : (existing.attendees || []),
+        // Pokud řádek v tabulce existuje, načteme text ze sloupce D a E přímo:
+        info: row.info !== undefined ? row.info : (existing.info || ''),
+        questions: row.questions !== undefined ? row.questions : (existing.questions || ''),
+        summary: (row.summary && row.summary.trim()) ? row.summary : (existing.summary || ''),
+        idea: (row.idea && row.idea.trim()) ? row.idea : (existing.idea || ''),
+        ideas: row.ideas !== undefined ? row.ideas : (existing.ideas || ''),
+        prayers: row.prayers !== undefined ? row.prayers : (existing.prayers || '')
       };
     });
 
