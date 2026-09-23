@@ -512,7 +512,7 @@ function render() {
       <!-- 8. OTÁZKY A POSTŘEHY K DISKUZI V BODECH -->
       <div class="custom-questions-section">
         <div class="questions-header">
-          <span>💬 Otázky:</span>
+          <span>💬 Otázky k diskuzi:</span>
           ${!isAddingQuest ? `
             <button class="btn-quest-add-link" data-key="${key}_addQuest">+ Přidat otázku</button>
           ` : ''}
