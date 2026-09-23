@@ -116,23 +116,21 @@ function updateAuthVisibility() {
   }
 }
 
-async function syncData(manual = false) {
-  if (!Store.state.isLoggedIn) return;
+async function syncData() {
+  if (els.statusText) els.statusText.textContent = 'Synchronizuji s tabulkou...';
 
-  if (manual && els.statusText) {
-    els.statusText.textContent = 'Ověřuji změny v tabulce...';
-  }
-
-  const res = await API.fetchAttendance();
-
-  if (res.demo) {
-    if (els.statusText) els.statusText.textContent = 'Režim ukázky (vložte SCRIPT_URL).';
-  } else if (res.success) {
-    Store.loadSheetData(res.data);
-    if (els.statusText) els.statusText.textContent = 'Aktuální data načtena.';
-    render();
-  } else {
-    if (manual && els.statusText) els.statusText.textContent = 'Chyba synchronizace dat.';
+  try {
+    const res = await API.fetchAttendance();
+    if (res.success && Array.isArray(res.data)) {
+      Store.loadSheetData(res.data);
+      if (els.statusText) els.statusText.textContent = 'Vše aktuální';
+      render(); // KLÍČOVÉ: Překreslí DOM novými daty z tabulky!
+    } else {
+      if (els.statusText) els.statusText.textContent = 'Režim offline (z mezipaměti)';
+    }
+  } catch (err) {
+    console.error('Chyba při synchronizaci:', err);
+    if (els.statusText) els.statusText.textContent = 'Chyba připojení';
   }
 }
 

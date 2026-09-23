@@ -50,44 +50,38 @@ export const Store = {
     localStorage.removeItem('chosen_cached_sessions');
   },
 
-  // Převede "30.9.", "30. 9.", "7.10." i "2026-09-30" na jednotný klíč "den-měsíc" (např. "30-9", "7-10")
-  normalizeKey(rawDate) {
+normalizeKey(rawDate) {
     if (!rawDate) return null;
     const str = String(rawDate).trim();
 
-    // Párování pro tečkový zápis: 30.9. nebo 30. 9. nebo 7.10.
-    const czMatch = str.match(/(\d{1,2})\s*\.\s*(\d{1,2})/);
+    // Zachytí formáty: "30.9.", "30. 9.", "7.10.", "30.09.2026", "30-9"
+    const czMatch = str.match(/(\d{1,2})\s*[.\s/-]+\s*(\d{1,2})/);
     if (czMatch) {
       const day = parseInt(czMatch[1], 10);
       const month = parseInt(czMatch[2], 10);
       return `${day}-${month}`;
     }
 
-    // ISO formát pro případ data typu 2026-09-30
-    const isoMatch = str.match(/^\d{4}-(\d{2})-(\d{2})/);
-    if (isoMatch) {
-      const month = parseInt(isoMatch[1], 10);
-      const day = parseInt(isoMatch[2], 10);
-      return `${day}-${month}`;
-    }
-
     return str;
   },
 
-loadSheetData(rows) {
+  loadSheetData(rows) {
     if (!Array.isArray(rows)) return;
 
     rows.forEach(row => {
       const key = this.normalizeKey(row.date);
       if (!key) return;
 
-      const existing = this.state.sessionsData[key] || {};
+      if (!this.state.sessionsData[key]) {
+        this.state.sessionsData[key] = {};
+      }
+
+      const existing = this.state.sessionsData[key];
 
       this.state.sessionsData[key] = {
         ...existing,
         title: (row.title && row.title.trim()) ? row.title : (existing.title || ''),
         attendees: (Array.isArray(row.attendees) && row.attendees.length > 0) ? row.attendees : (existing.attendees || []),
-        // Pokud řádek v tabulce existuje, načteme text ze sloupce D a E přímo:
         info: row.info !== undefined ? row.info : (existing.info || ''),
         questions: row.questions !== undefined ? row.questions : (existing.questions || ''),
         summary: (row.summary && row.summary.trim()) ? row.summary : (existing.summary || ''),
