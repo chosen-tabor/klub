@@ -6,85 +6,93 @@
   <title>The Chosen Club Tábor</title>
   
   <link rel="manifest" href="manifest.json">
-  <!-- iPhone / iPad (plný čtverec s černým pozadím) -->
+
+  <!-- iPhone / iPad ikona a zobrazení -->
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-  <!-- Prohlížeč -->
-  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">  
-  <meta name="theme-color" content="#12636f">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="The Chosen Club">
+
+  <!-- Ikona v prohlížeči (favicon) -->
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">  
+  <meta name="theme-color" content="#090d16">
 
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="container">
-  <!-- PŘEPÍNAČ MOTIVU (VŽDY DOSTUPNÝ V ROCHU) -->
-  <div class="top-actions">
-    <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Přepnout motiv">
-      <span id="themeIcon">🌙</span> <span id="themeLabel">Tmavý režim</span>
-    </button>
-  </div>
+<div class="app-container">
 
-  <!-- PŘIHLAŠOVACÍ OBRAZOVKA (PRO NEPŘIHLÁŠENÉ) -->
-  <section id="loginScreen" class="login-view">
-    <header>
-      <div class="subtitle">Seriál Vyvolení</div>
-      <h1>THE CHOSEN</h1>
-      <div class="location-info">Církev bratrská Tábor</div>
-    </header>
-
+  <!-- ==========================================
+       PŘIHLAŠOVACÍ OBRAZOVKA (PRO NEPŘIHLÁŠENÉ)
+       ========================================== -->
+  <section id="loginScreen" class="login-screen-wrap">
     <div class="login-card">
-      <h2>Vstup pro organizátory</h2>
-      <p class="login-desc">Přihlaste se prosím svým jménem a týmovým PINem.</p>
+      <div style="text-align: center; margin-bottom: 0.5rem;">
+        <img src="./apple-touch-icon.png" alt="Logo" class="brand-icon" style="margin: 0 auto 0.75rem auto; width: 56px; height: 56px; min-width: 56px;">
+        <div class="brand-sub">Klub Tábor</div>
+        <h1 class="brand-title" style="font-size: 1.7rem; margin-top: 0.2rem;">The CHOSEN</h1>
+      </div>
+
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
+        Vstup pro organizační tým
+      </p>
 
       <form id="loginForm">
-        <div class="input-box">
-          <label for="loginName">Tvoje jméno</label>
-          <input type="text" id="loginName" placeholder="Např. Michal" required autocomplete="name">
+        <div class="form-group">
+          <label for="loginName" class="form-label">Tvoje jméno</label>
+          <input type="text" id="loginName" class="form-input" placeholder="Např. Michal" required autocomplete="name">
         </div>
 
-        <div class="input-box">
-          <label for="loginPin">Týmový PIN</label>
-          <input type="password" id="loginPin" maxlength="8" placeholder="••••" required autocomplete="current-password">
+        <div class="form-group" style="margin-top: 0.75rem;">
+          <label for="loginPin" class="form-label">Týmový nebo Admin PIN</label>
+          <input type="password" id="loginPin" class="form-input" maxlength="8" placeholder="••••" required autocomplete="current-password">
         </div>
 
-        <div id="loginError" class="login-error hidden"></div>
+        <div id="loginError" class="login-error-msg hidden" style="margin-top: 0.75rem;"></div>
 
-        <button type="submit" id="loginBtn" class="btn-submit">Vstoupit do aplikace</button>
+        <button type="submit" id="loginBtn" class="btn-login-submit">Vstoupit do aplikace</button>
       </form>
     </div>
   </section>
 
-  <!-- HLAVNÍ APLIKACE (PO PŘIHLÁŠENÍ) -->
-  <section id="appScreen" class="app-view hidden">
-    <header>
-      <div class="subtitle">Seriál Vyvolení 2026</div>
-      <h1>THE CHOSEN</h1>
-      <div class="location-info">
-        Církev bratrská Tábor
+  <!-- ==========================================
+       HLAVNÍ OBRAZOVKA APLIKACE (PO PŘIHLÁŠENÍ)
+       ========================================== -->
+  <section id="appScreen" class="hidden">
+    <!-- HLAVIČKA APLIKACE -->
+    <header class="app-header">
+      <div class="brand-wrap">
+        <img src="./apple-touch-icon.png" alt="Logo" class="brand-icon" width="38" height="38">
+        <div class="brand-text-block">
+          <span class="brand-sub">Klub Tábor</span>
+          <h1 class="brand-title">The CHOSEN</h1>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <button id="themeToggleBtn" type="button" class="btn-theme-toggle" title="Přepnout motiv">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel" class="theme-label-text">Tmavý</span>
+        </button>
+        
+        <div class="user-pill">
+          <span id="loggedUserLabel" class="user-name">...</span>
+          <button id="logoutBtn" type="button" class="btn-logout" title="Odhlásit">✕</button>
+        </div>
       </div>
     </header>
 
-    <!-- LIŠTA PŘIHLÁŠENÉHO UŽIVATELE -->
-    <div class="user-bar">
-      <span>Přihlášen: <strong id="loggedUserLabel" class="user-name-display"></strong></span>
-      <button id="logoutBtn" class="btn-logout">Odhlásit</button>
-    </div>
-
-    <!-- SYNCHRONIZACE -->
-    <div class="sync-panel">
+    <!-- STAVOVÁ A SYNCHRONIZAČNÍ LIŠTA -->
+    <div class="status-bar">
       <span id="statusText">Načítám data...</span>
       <button class="btn-refresh" id="refreshBtn">↻ Obnovit</button>
     </div>
 
-    <!-- SEZNAM KARET VEČERŮ -->
-    <main class="sessions-list" id="sessionsList"></main>
+    <!-- SEZNAM KARET S DÍLY -->
+    <main id="sessionsList"></main>
   </section>
+
 </div>
 
 <script type="module" src="js/app.js"></script>

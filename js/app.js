@@ -26,110 +26,118 @@ function initTheme() {
   const savedTheme = localStorage.getItem('chosen_theme') || 'light';
   if (savedTheme === 'dark') {
     document.body.classList.add('dark-theme');
-    els.themeIcon.textContent = '☀️';
-    els.themeLabel.textContent = 'Světlý režim';
+    if (els.themeIcon) els.themeIcon.textContent = '☀️';
+    if (els.themeLabel) els.themeLabel.textContent = 'Světlý';
   } else {
     document.body.classList.remove('dark-theme');
-    els.themeIcon.textContent = '🌙';
-    els.themeLabel.textContent = 'Tmavý režim';
+    if (els.themeIcon) els.themeIcon.textContent = '🌙';
+    if (els.themeLabel) els.themeLabel.textContent = 'Tmavý';
   }
 }
 
-els.themeToggleBtn.addEventListener('click', () => {
-  const isDark = document.body.classList.toggle('dark-theme');
-  if (isDark) {
-    localStorage.setItem('chosen_theme', 'dark');
-    els.themeIcon.textContent = '☀️';
-    els.themeLabel.textContent = 'Světlý režim';
-  } else {
-    localStorage.setItem('chosen_theme', 'light');
-    els.themeIcon.textContent = '🌙';
-    els.themeLabel.textContent = 'Tmavý režim';
-  }
-});
+if (els.themeToggleBtn) {
+  els.themeToggleBtn.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark-theme');
+    if (isDark) {
+      localStorage.setItem('chosen_theme', 'dark');
+      if (els.themeIcon) els.themeIcon.textContent = '☀️';
+      if (els.themeLabel) els.themeLabel.textContent = 'Světlý';
+    } else {
+      localStorage.setItem('chosen_theme', 'light');
+      if (els.themeIcon) els.themeIcon.textContent = '🌙';
+      if (els.themeLabel) els.themeLabel.textContent = 'Tmavý';
+    }
+  });
+}
 
 initTheme();
 
 Store.initAuth();
 updateAuthVisibility();
 
-// BLESKOVÝ START: Pokud uživatel je přihlášen, vykreslíme ihned mezipaměť bez čekání
+// Bleskový start z mezipaměti
 if (Store.state.isLoggedIn) {
   render();
-  syncData(); // Synchronizace na pozadí
+  syncData();
 }
 
-els.loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const name = els.loginName.value.trim();
-  const pin = els.loginPin.value.trim();
+if (els.loginForm) {
+  els.loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = els.loginName.value.trim();
+    const pin = els.loginPin.value.trim();
 
-  if (!name || !pin) return;
+    if (!name || !pin) return;
 
-  els.loginError.classList.add('hidden');
-  els.loginBtn.disabled = true;
-  els.loginBtn.textContent = 'Ověřuji PIN...';
+    els.loginError.classList.add('hidden');
+    els.loginBtn.disabled = true;
+    els.loginBtn.textContent = 'Ověřuji PIN...';
 
-  const check = await API.verifyCredentials(pin);
+    const check = await API.verifyCredentials(pin);
 
-  if (check.success) {
-    Store.setAuth(name, pin, check.role || 'team');
-    els.loginBtn.disabled = false;
-    els.loginBtn.textContent = 'Vstoupit do aplikace';
+    if (check.success) {
+      Store.setAuth(name, pin, check.role || 'team');
+      els.loginBtn.disabled = false;
+      els.loginBtn.textContent = 'Vstoupit do aplikace';
+      updateAuthVisibility();
+      render();
+      syncData();
+    } else {
+      els.loginBtn.disabled = false;
+      els.loginBtn.textContent = 'Vstoupit do aplikace';
+      els.loginError.textContent = check.message || 'Nesprávný PIN.';
+      els.loginError.classList.remove('hidden');
+    }
+  });
+}
+
+if (els.logoutBtn) {
+  els.logoutBtn.addEventListener('click', () => {
+    Store.logout();
     updateAuthVisibility();
-    render();
-    syncData();
-  } else {
-    els.loginBtn.disabled = false;
-    els.loginBtn.textContent = 'Vstoupit do aplikace';
-    els.loginError.textContent = check.message || 'Nesprávný PIN.';
-    els.loginError.classList.remove('hidden');
-  }
-});
+  });
+}
 
-els.logoutBtn.addEventListener('click', () => {
-  Store.logout();
-  updateAuthVisibility();
-});
-
-els.refreshBtn.addEventListener('click', () => syncData(true));
+if (els.refreshBtn) {
+  els.refreshBtn.addEventListener('click', () => syncData(true));
+}
 
 function updateAuthVisibility() {
   if (Store.state.isLoggedIn) {
     els.loginScreen.classList.add('hidden');
     els.appScreen.classList.remove('hidden');
     const roleBadge = Store.state.role === 'admin' ? ' (Admin)' : '';
-    els.loggedUserLabel.textContent = `${Store.state.userName}${roleBadge}`;
+    if (els.loggedUserLabel) els.loggedUserLabel.textContent = `${Store.state.userName}${roleBadge}`;
   } else {
     els.appScreen.classList.add('hidden');
     els.loginScreen.classList.remove('hidden');
-    els.loginName.value = '';
-    els.loginPin.value = '';
-    els.loginError.classList.add('hidden');
+    if (els.loginName) els.loginName.value = '';
+    if (els.loginPin) els.loginPin.value = '';
+    if (els.loginError) els.loginError.classList.add('hidden');
   }
 }
 
 async function syncData(manual = false) {
   if (!Store.state.isLoggedIn) return;
 
-  if (manual) {
+  if (manual && els.statusText) {
     els.statusText.textContent = 'Ověřuji změny v tabulce...';
   }
 
   const res = await API.fetchAttendance();
 
   if (res.demo) {
-    els.statusText.textContent = 'Režim ukázky (vložte SCRIPT_URL).';
+    if (els.statusText) els.statusText.textContent = 'Režim ukázky (vložte SCRIPT_URL).';
   } else if (res.success) {
     Store.loadSheetData(res.data);
-    els.statusText.textContent = 'Aktuální data načtena.';
+    if (els.statusText) els.statusText.textContent = 'Aktuální data načtena.';
     render();
   } else {
-    els.statusText.textContent = manual ? 'Chyba synchronizace dat.' : '';
+    if (manual && els.statusText) els.statusText.textContent = 'Chyba synchronizace dat.';
   }
 }
 
-// OPTIMISTICKÝ ZÁPIS ÚČASTI (Okamžitá reakce 0 ms)
+// Zápis nebo odhlášení kliknutím na štítek se jménem
 async function handleToggleAttendance(session) {
   const name = Store.state.userName;
   const pin = Store.state.pin;
@@ -145,13 +153,11 @@ async function handleToggleAttendance(session) {
     attendees.push(name);
   }
 
-  // 1. Změna se ihned projeví na obrazovce
   Store.state.sessionsData[key] = { ...currentData, attendees };
   Store.saveCurrentToCache();
-  els.statusText.textContent = 'Změna uložena v telefonu, propisuji do tabulky...';
+  if (els.statusText) els.statusText.textContent = 'Ukládám do tabulky...';
   render();
 
-  // 2. Odeslání do Google Tabulky na pozadí
   const res = await API.updateAttendance({
     date: session.dateStr,
     pin: pin,
@@ -164,10 +170,9 @@ async function handleToggleAttendance(session) {
   });
 
   if (res.status === 'ok' || res.demo) {
-    els.statusText.textContent = 'Vše uloženo v tabulce.';
+    if (els.statusText) els.statusText.textContent = 'Vše uloženo v tabulce.';
   } else {
-    // Pokud zápis selhal, vrátíme původní stav
-    alert('Chyba při zápisu do tabulky: ' + (res.message || 'Chyba spojení'));
+    alert('Chyba při zápisu: ' + (res.message || 'Chyba spojení'));
     if (idx > -1) {
       attendees.splice(idx, 0, name);
     } else {
@@ -175,23 +180,20 @@ async function handleToggleAttendance(session) {
     }
     Store.state.sessionsData[key] = { ...currentData, attendees };
     Store.saveCurrentToCache();
-    els.statusText.textContent = 'Zápis selhal.';
     render();
   }
 }
 
-// ULOŽENÍ POZNÁMKY (Okamžitá reakce)
 async function handleSaveNote(session, newInfoText) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
   const currentData = Store.state.sessionsData[key] || {};
   const oldInfo = currentData.info;
 
-  // Okamžitá změna v UI
   Store.state.sessionsData[key] = { ...currentData, info: newInfoText };
   Store.saveCurrentToCache();
   activeEditing[`${key}_note`] = false;
-  els.statusText.textContent = 'Ukládám do tabulky...';
+  if (els.statusText) els.statusText.textContent = 'Ukládám organizační info...';
   render();
 
   const res = await API.updateAttendance({
@@ -206,7 +208,7 @@ async function handleSaveNote(session, newInfoText) {
   });
 
   if (res.status === 'ok' || res.demo) {
-    els.statusText.textContent = 'Organizační info uloženo v tabulce.';
+    if (els.statusText) els.statusText.textContent = 'Organizační info uloženo.';
   } else {
     alert('Chyba při ukládání: ' + (res.message || 'Nesprávný PIN'));
     Store.state.sessionsData[key] = { ...currentData, info: oldInfo };
@@ -215,18 +217,16 @@ async function handleSaveNote(session, newInfoText) {
   }
 }
 
-// ULOŽENÍ OTÁZEK K DISKUZI (Okamžitá reakce)
 async function handleSaveQuestions(session, newQuestionsText) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
   const currentData = Store.state.sessionsData[key] || {};
   const oldQuestions = currentData.questions;
 
-  // Okamžitá změna v UI
   Store.state.sessionsData[key] = { ...currentData, questions: newQuestionsText };
   Store.saveCurrentToCache();
   activeEditing[`${key}_quest`] = false;
-  els.statusText.textContent = 'Ukládám do tabulky...';
+  if (els.statusText) els.statusText.textContent = 'Ukládám otázky...';
   render();
 
   const res = await API.updateAttendance({
@@ -241,7 +241,7 @@ async function handleSaveQuestions(session, newQuestionsText) {
   });
 
   if (res.status === 'ok' || res.demo) {
-    els.statusText.textContent = 'Otázky uloženy v tabulce.';
+    if (els.statusText) els.statusText.textContent = 'Otázky uloženy v tabulce.';
   } else {
     alert('Chyba při ukládání: ' + (res.message || 'Nesprávný PIN'));
     Store.state.sessionsData[key] = { ...currentData, questions: oldQuestions };
@@ -250,7 +250,6 @@ async function handleSaveQuestions(session, newQuestionsText) {
   }
 }
 
-// ULOŽENÍ DĚJE A MYŠLENKY (ADMIN)
 async function handleSaveAdminPlot(session, newTitle, newSummary, newIdea) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
@@ -264,7 +263,7 @@ async function handleSaveAdminPlot(session, newTitle, newSummary, newIdea) {
   };
   Store.saveCurrentToCache();
   activeEditing[`${key}_plot`] = false;
-  els.statusText.textContent = 'Ukládám do tabulky...';
+  if (els.statusText) els.statusText.textContent = 'Ukládám do tabulky...';
   render();
 
   const res = await API.updateAttendance({
@@ -279,16 +278,15 @@ async function handleSaveAdminPlot(session, newTitle, newSummary, newIdea) {
   });
 
   if (res.status === 'ok' || res.demo) {
-    els.statusText.textContent = 'Texty uloženy v tabulce pro všechny.';
+    if (els.statusText) els.statusText.textContent = 'Texty uloženy v tabulce pro všechny.';
   } else {
     alert('Chyba při ukládání: ' + (res.message || 'Nedostatečná oprávnění'));
     render();
   }
 }
 
-// VYKRESLENÍ KARET
 function render() {
-  if (!Store.state.isLoggedIn) return;
+  if (!Store.state.isLoggedIn || !els.list) return;
 
   els.list.innerHTML = '';
   const currentName = Store.state.userName;
@@ -312,6 +310,7 @@ function render() {
     card.className = 'session-card';
 
     card.innerHTML = `
+      <!-- 1. HLAVIČKA KARTY (DATUM & ČAS) -->
       <div class="card-header-row">
         <div class="badge-and-date">
           <span class="season-tag">${session.season}</span>
@@ -320,72 +319,37 @@ function render() {
         <span class="time-tag">18:00</span>
       </div>
 
-      <div class="title-with-admin">
-        <h3 class="episode-title-heading">${session.episodeNumber}: ${effectiveTitle}</h3>
-        ${isAdmin && !isEditingPlot ? `
-          <button class="btn-admin-edit" data-key="${key}_plot">✎ Upravit texty dílu</button>
-        ` : ''}
-      </div>
+      <!-- 2. PŘIHLAŠENÍ ORGANIZÁTOŘI + KLIKACÍ MOJE JMÉNO -->
+      <div class="attendees-container">
+        <div class="attendees-title">Organizační tým (${attendees.length}):</div>
+        <div class="tags-wrap">
+          ${attendees.length > 0 
+            ? attendees.map(a => {
+                if (a === currentName) {
+                  return `
+                    <button type="button" class="person-tag my-tag" title="Kliknutím zrušíš svou účast">
+                      <span class="my-tag-dot"></span>
+                      <span>${a}</span>
+                      <span class="my-tag-remove">✕</span>
+                    </button>
+                  `;
+                } else {
+                  return `<span class="person-tag">${a}</span>`;
+                }
+              }).join('') 
+            : `<span class="no-attendees">Zatím nikdo nezapsán</span>`
+          }
 
-      ${!isEditingPlot ? `
-        <p class="summary-text">${effectiveSummary}</p>
-
-        <p class="characters-text">
-          <strong>Hlavní postavy:</strong> ${session.characters}
-        </p>
-
-        <div class="discussion-idea">
-          <strong>Hlavní motiv k diskuzi:</strong>
-          ${effectiveIdea}
-        </div>
-      ` : `
-        <div class="admin-editor-box">
-          <label class="editor-label">Název dílu:</label>
-          <input type="text" class="editor-textarea admin-title-input" value="${effectiveTitle}">
-
-          <label class="editor-label" style="margin-top: 0.6rem;">Děj dílu (podle Wikipedie):</label>
-          <textarea class="editor-textarea admin-summary-input" rows="5">${effectiveSummary}</textarea>
-
-          <label class="editor-label" style="margin-top: 0.6rem;">Hlavní motiv k diskuzi (pro hosty):</label>
-          <textarea class="editor-textarea admin-idea-input" rows="3">${effectiveIdea}</textarea>
-
-          <div class="editor-actions" style="margin-top: 0.6rem;">
-            <button class="btn-save-action btn-save-plot">Uložit pro všechny</button>
-            <button class="btn-cancel-action btn-cancel-plot">Zrušit</button>
-          </div>
-        </div>
-      `}
-
-      <div class="custom-questions-section">
-        ${data.questions ? `
-          <div class="questions-block">
-            <div class="questions-header">
-              <span>💬 Otázky a postřehy k diskuzi:</span>
-              <button class="btn-edit-link" data-key="${key}_quest">Upravit</button>
-            </div>
-            <div class="questions-content">${data.questions.replace(/\n/g, '<br>')}</div>
-          </div>
-        ` : `
-          ${!isEditingQuest ? `
-            <button class="btn-action-outline btn-quest" data-key="${key}_quest">
-              + Přidat otázky a postřehy k diskuzi
+          ${!isPresent ? `
+            <button type="button" class="btn-add-me-tag" title="Zapsat se do týmu na tento večer">
+              + Zapsat se
             </button>
           ` : ''}
-        `}
-
-        ${isEditingQuest ? `
-          <div class="inline-editor">
-            <label class="editor-label">Otázky k diskuzi:</label>
-            <textarea class="editor-textarea" rows="3" placeholder="Otázky pro moderátora do sálu...">${data.questions || ''}</textarea>
-            <div class="editor-actions">
-              <button class="btn-save-action btn-save-quest">Uložit do tabulky</button>
-              <button class="btn-cancel-action btn-cancel-quest">Zrušit</button>
-            </div>
-          </div>
-        ` : ''}
+        </div>
       </div>
 
-      <div class="organizer-section">
+      <!-- 3. ORGANIZAČNÍ INFO -->
+      <div class="organizer-section" style="margin-top: 0.15rem;">
         ${data.info ? `
           <div class="organizer-info-block">
             <div class="organizer-info-header">
@@ -414,23 +378,91 @@ function render() {
         ` : ''}
       </div>
 
-      <div class="attendees-container">
-        <div class="attendees-title">Organizační tým (${attendees.length}):</div>
-        <div class="tags-wrap">
-          ${attendees.length > 0 
-            ? attendees.map(a => `<span class="person-tag">${a}</span>`).join('') 
-            : `<span class="no-attendees">Zatím nikdo nezapsán</span>`
-          }
-        </div>
+      <!-- DĚLÍCÍ ČÁRA PŘED OBSAHEM DÍLU -->
+      <hr style="border: none; border-top: 1px solid var(--border-subtle); margin: 0.2rem 0;">
+
+      <!-- 4. NÁZEV DÍLU & ADMIN EDITACE -->
+      <div class="title-with-admin">
+        <h3 class="episode-title-heading">${session.episodeNumber}: ${effectiveTitle}</h3>
+        ${isAdmin && !isEditingPlot ? `
+          <button class="btn-admin-edit" data-key="${key}_plot">✎ Upravit texty dílu</button>
+        ` : ''}
       </div>
 
-      <button class="btn-toggle-attendance ${isPresent ? 'is-attending' : ''}">
-        ${isPresent ? '✓ Odhlásit mou účast' : '+ Budu přítomen'}
-      </button>
+      <!-- 5. DĚJ DÍLU (NEBO ADMIN EDITOR) -->
+      ${!isEditingPlot ? `
+        <p class="summary-text">${effectiveSummary}</p>
+
+        <!-- 6. POSTAVY -->
+        <p class="characters-text">
+          <strong>Hlavní postavy:</strong> ${session.characters}
+        </p>
+
+        <!-- 7. HLAVNÍ MOTIV K DISKUZI (PRO HOSTY) -->
+        <div class="discussion-idea">
+          <strong>Hlavní motiv k diskuzi:</strong>
+          ${effectiveIdea}
+        </div>
+      ` : `
+        <div class="admin-editor-box">
+          <label class="editor-label">Název dílu:</label>
+          <input type="text" class="editor-textarea admin-title-input" value="${effectiveTitle}">
+
+          <label class="editor-label" style="margin-top: 0.6rem;">Děj dílu (podle Wikipedie):</label>
+          <textarea class="editor-textarea admin-summary-input" rows="5">${effectiveSummary}</textarea>
+
+          <label class="editor-label" style="margin-top: 0.6rem;">Hlavní motiv k diskuzi (pro hosty):</label>
+          <textarea class="editor-textarea admin-idea-input" rows="3">${effectiveIdea}</textarea>
+
+          <div class="editor-actions" style="margin-top: 0.6rem;">
+            <button class="btn-save-action btn-save-plot">Uložit pro všechny</button>
+            <button class="btn-cancel-action btn-cancel-plot">Zrušit</button>
+          </div>
+        </div>
+      `}
+
+      <!-- 8. VLASTNÍ OTÁZKY A POSTŘEHY K DISKUZI -->
+      <div class="custom-questions-section">
+        ${data.questions ? `
+          <div class="questions-block">
+            <div class="questions-header">
+              <span>💬 Otázky a postřehy k diskuzi:</span>
+              <button class="btn-edit-link" data-key="${key}_quest">Upravit</button>
+            </div>
+            <div class="questions-content">${data.questions.replace(/\n/g, '<br>')}</div>
+          </div>
+        ` : `
+          ${!isEditingQuest ? `
+            <button class="btn-action-outline btn-quest" data-key="${key}_quest">
+              + Přidat otázky a postřehy k diskuzi
+            </button>
+          ` : ''}
+        `}
+
+        ${isEditingQuest ? `
+          <div class="inline-editor">
+            <label class="editor-label">Otázky k diskuzi:</label>
+            <textarea class="editor-textarea" rows="3" placeholder="Otázky pro moderátora do sálu...">${data.questions || ''}</textarea>
+            <div class="editor-actions">
+              <button class="btn-save-action btn-save-quest">Uložit do tabulky</button>
+              <button class="btn-cancel-action btn-cancel-quest">Zrušit</button>
+            </div>
+          </div>
+        ` : ''}
+      </div>
     `;
 
-    card.querySelector('.btn-toggle-attendance').addEventListener('click', () => handleToggleAttendance(session));
+    // Obsluha zápisu nebo zrušení účasti kliknutím na štítek
+    const addMeBtn = card.querySelector('.btn-add-me-tag');
+    if (addMeBtn) {
+      addMeBtn.addEventListener('click', () => handleToggleAttendance(session));
+    }
+    const myTagBtn = card.querySelector('.my-tag');
+    if (myTagBtn) {
+      myTagBtn.addEventListener('click', () => handleToggleAttendance(session));
+    }
 
+    // Admin editace
     const editPlotBtn = card.querySelector('.btn-admin-edit');
     if (editPlotBtn) {
       editPlotBtn.addEventListener('click', () => {
@@ -455,6 +487,7 @@ function render() {
       });
     }
 
+    // Otázky k diskuzi
     const addQuestBtn = card.querySelector('.btn-quest');
     if (addQuestBtn) {
       addQuestBtn.addEventListener('click', () => {
@@ -482,6 +515,7 @@ function render() {
       });
     }
 
+    // Organizační info
     const addNoteBtn = card.querySelector('.btn-note');
     if (addNoteBtn) {
       addNoteBtn.addEventListener('click', () => {
