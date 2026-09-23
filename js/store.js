@@ -57,24 +57,38 @@ export const Store = {
     return String(rawDate).replace(/\s+/g, '');
   },
 
-  loadSheetData(rawData) {
-    this.state.sessionsData = {};
-    for (const [key, val] of Object.entries(rawData)) {
-      const normKey = this.normalizeKey(key);
-      if (normKey) {
-        this.state.sessionsData[normKey] = {
-          title: val.title || '',
-          attendees: val.attendees || [],
-          info: val.info || '',
-          questions: val.questions || '',
-          summary: val.summary || '',
-          idea: val.idea || ''
-        };
-      }
+  loadSheetData(rows) {
+  if (!Array.isArray(rows)) return;
+
+  rows.forEach(row => {
+    // Předpokládáme párování podle formátu data, např. "30-9" nebo "2026-09-30"
+    const parts = (row.date || '').split('.');
+    let key = '';
+    if (parts.length >= 2) {
+      key = `${parts[0].trim()}-${parts[1].trim()}`;
+    } else {
+      key = row.date;
     }
-    // Uložení aktuálních dat do paměti telefonu pro příští bleskový start
-    localStorage.setItem('chosen_cached_sessions', JSON.stringify(this.state.sessionsData));
-  },
+
+    if (!this.state.sessionsData[key]) {
+      this.state.sessionsData[key] = {};
+    }
+
+    this.state.sessionsData[key] = {
+      ...this.state.sessionsData[key],
+      title: row.title || this.state.sessionsData[key].title || '',
+      attendees: row.attendees || this.state.sessionsData[key].attendees || [],
+      info: row.info || '',
+      questions: row.questions || '',
+      summary: row.summary || this.state.sessionsData[key].summary || '',
+      idea: row.idea || this.state.sessionsData[key].idea || '',
+      ideas: row.ideas || '',      // Nově načtené nápady
+      prayers: row.prayers || ''   // Nově načtené modlitby
+    };
+  });
+
+  this.saveCurrentToCache();
+}
 
   saveCurrentToCache() {
     localStorage.setItem('chosen_cached_sessions', JSON.stringify(this.state.sessionsData));
