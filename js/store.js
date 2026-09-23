@@ -78,16 +78,17 @@ normalizeKey(rawDate) {
 
       const existing = this.state.sessionsData[key];
 
+      // Sloučí data – prázdné hodnoty z duplicitních řádků NIKDY nepřepíší již existující text
       this.state.sessionsData[key] = {
         ...existing,
         title: (row.title && row.title.trim()) ? row.title : (existing.title || ''),
         attendees: (Array.isArray(row.attendees) && row.attendees.length > 0) ? row.attendees : (existing.attendees || []),
-        info: row.info !== undefined ? row.info : (existing.info || ''),
-        questions: row.questions !== undefined ? row.questions : (existing.questions || ''),
+        info: (row.info && row.info.trim()) ? row.info : (existing.info || ''),
+        questions: (row.questions && row.questions.trim()) ? row.questions : (existing.questions || ''),
         summary: (row.summary && row.summary.trim()) ? row.summary : (existing.summary || ''),
         idea: (row.idea && row.idea.trim()) ? row.idea : (existing.idea || ''),
-        ideas: row.ideas !== undefined ? row.ideas : (existing.ideas || ''),
-        prayers: row.prayers !== undefined ? row.prayers : (existing.prayers || '')
+        ideas: (row.ideas && row.ideas.trim()) ? row.ideas : (existing.ideas || ''),
+        prayers: (row.prayers && row.prayers.trim()) ? row.prayers : (existing.prayers || '')
       };
     });
 
