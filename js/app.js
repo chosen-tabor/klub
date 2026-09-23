@@ -136,7 +136,7 @@ async function syncData(manual = false) {
   }
 }
 
-// Účast organizátora
+// Účast organizátora – odesílá POUZE změněný seznam účastníků
 async function handleToggleAttendance(session) {
   const name = Store.state.userName;
   const pin = Store.state.pin;
@@ -160,14 +160,7 @@ async function handleToggleAttendance(session) {
   const res = await API.updateAttendance({
     date: session.dateStr,
     pin: pin,
-    title: currentData.title,
-    attendees: attendees,
-    info: currentData.info,
-    questions: currentData.questions,
-    ideas: currentData.ideas,
-    prayers: currentData.prayers,
-    summary: currentData.summary,
-    idea: currentData.idea
+    attendees: attendees
   });
 
   if (res.status === 'ok' || res.demo) {
@@ -185,7 +178,7 @@ async function handleToggleAttendance(session) {
   }
 }
 
-// Pomocná synchronizace celé relace
+// Obecná synchronizace – posílá POUZE to pole, které se skutečně změnilo
 async function updateSessionOnBackend(session, updatedFields, successMsg) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
@@ -199,14 +192,6 @@ async function updateSessionOnBackend(session, updatedFields, successMsg) {
   const payload = {
     date: session.dateStr,
     pin: pin,
-    title: currentData.title,
-    attendees: currentData.attendees,
-    info: currentData.info,
-    questions: currentData.questions,
-    ideas: currentData.ideas,
-    prayers: currentData.prayers,
-    summary: currentData.summary,
-    idea: currentData.idea,
     ...updatedFields
   };
 
