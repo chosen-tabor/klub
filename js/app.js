@@ -455,9 +455,16 @@ function render() {
                 <div class="task-content-wrap">
                   <span class="task-name">${taskDesc}</span>${assignedPeople ? `<span class="task-people">(${assignedPeople})</span>` : ''}
                   
-                  <button type="button" class="btn-assign-toggle ${isAssigned ? 'is-assigned-to-me' : ''}" data-idx="${idx}" title="${isAssigned ? 'Odepsat se z tohoto úkolu' : 'Přiřadit se k tomuto úkolu'}">
-                    ${isAssigned ? '✓ Mám na starost ✕' : '+ Přidat se'}
-                  </button>
+                  // Původní:
+                  // <button class="btn-claim-task" ...>Mám na starost</button>
+
+                  // Nové elegantní:
+                  <div class="task-actions">
+                    <button class="btn-claim-task" data-day="${session.day}" data-month="${session.month}" data-index="${idx}" title="Přidat se k úkolu">
+                     + Já
+                    </button>
+                    <button class="btn-delete-item" data-type="task" data-day="${session.day}" data-month="${session.month}" data-index="${idx}" title="Smazat úkol">✕</button>
+                  </div>
                 </div>
                 <button type="button" class="btn-task-delete" data-idx="${idx}" title="Odstranit úkol">✕</button>
               </div>
