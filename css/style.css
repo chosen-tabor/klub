@@ -15,6 +15,8 @@
   --teal-hover: #115e59;
   --teal-light: #f0fdfa;
   --teal-border: #ccfbf1;
+  --teal-prominent-bg: #0d9488;
+  --teal-prominent-text: #ffffff;
 
   --gold-accent: #b45309;
   --gold-bg: #fffbeb;
@@ -41,6 +43,8 @@ body.dark-theme {
   --teal-hover: #2dd4bf;
   --teal-light: #042f2e;
   --teal-border: #115e59;
+  --teal-prominent-bg: #14b8a6;
+  --teal-prominent-text: #051b1a;
 
   --gold-accent: #f59e0b;
   --gold-bg: #2d2105;
@@ -51,7 +55,7 @@ body.dark-theme {
 }
 
 /* ==========================================
-   RESET & ROZVRŽENÍ (EDGE-TO-EDGE)
+   RESET & ROZVRŽENÍ
    ========================================== */
 * {
   box-sizing: border-box;
@@ -84,7 +88,7 @@ body {
 }
 
 /* ==========================================
-   HLAVIČKA (PREMIUM & STŘÍZLIVÁ)
+   HLAVIČKA WEBU
    ========================================== */
 header.app-header {
   display: flex !important;
@@ -210,7 +214,7 @@ header.app-header {
 }
 
 /* ==========================================
-   STAVOVÁ LIŠTA (STATUS BAR)
+   STAVOVÁ LIŠTA
    ========================================== */
 .status-bar {
   display: flex;
@@ -233,19 +237,20 @@ header.app-header {
 }
 
 /* ==========================================
-   SEZNAM SETKÁNÍ & KARTY
+   KARTA DNE
    ========================================== */
 #sessionsList {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .session-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
+  border-top: 3px solid var(--teal-primary); /* Tyrkysový proužek oddělující dny */
   border-radius: 12px;
-  padding: 1.1rem 1rem;
+  padding: 1.25rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
@@ -253,146 +258,71 @@ header.app-header {
 
 @media (min-width: 600px) {
   .session-card {
-    padding: 1.4rem 1.5rem;
+    padding: 1.5rem 1.5rem;
     border-radius: 14px;
     gap: 1rem;
   }
 }
 
-/* Hlavička karty */
-.card-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.badge-and-date {
+/* ==========================================
+   1. SÉRIE, DEN A ČAS NA JEDNOM ŘÁDKU
+   ========================================== */
+.single-line-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding-bottom: 0.2rem;
 }
 
-.season-tag {
+.season-badge {
   background: var(--badge-bg);
   color: var(--badge-text);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 6px;
 }
 
-.date-text {
-  font-size: 1.1rem;
+.day-heading-inline {
+  font-size: 1.4rem;
   font-weight: 800;
-  color: var(--teal-primary);
-  letter-spacing: -0.01em;
-}
-
-.time-tag {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-/* Účastníci & klikací štítky */
-.attendees-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin-top: -0.2rem;
-}
-
-.attendees-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-}
-
-.tags-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.person-tag {
-  background: var(--badge-bg);
   color: var(--text-main);
-  font-size: 0.88rem;
-  font-weight: 600;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  border: 1px solid var(--border);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.line-divider {
+  color: var(--text-muted);
+  opacity: 0.5;
+  font-size: 0.9rem;
+}
+
+.time-badge-inline {
   display: inline-flex;
   align-items: center;
-}
-
-/* Moje přihlášené jméno (klikací s puntíkem a křížkem) */
-.my-tag {
+  gap: 0.35rem;
   background: var(--teal-light);
   border: 1px solid var(--teal-border);
   color: var(--teal-primary);
-  cursor: pointer;
-  padding: 0.25rem 0.55rem 0.25rem 0.5rem;
-  gap: 0.4rem;
-  transition: all 0.15s ease;
-  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0.15rem 0.6rem;
+  border-radius: 20px;
 }
 
-.my-tag:hover {
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.08);
-}
-
-.my-tag:hover .my-tag-remove {
-  color: #ef4444;
-}
-
-.my-tag-dot {
-  width: 7px;
-  height: 7px;
+.time-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background-color: var(--teal-primary);
-  display: inline-block;
 }
 
-.my-tag-remove {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: var(--text-muted);
-  margin-left: 0.15rem;
-  line-height: 1;
-}
-
-/* Tlačítko + Zapsat se */
-.btn-add-me-tag {
-  background: transparent;
-  border: 1px dashed var(--teal-primary);
-  color: var(--teal-primary);
-  font-size: 0.82rem;
-  font-weight: 700;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  font-family: inherit;
-}
-
-.btn-add-me-tag:hover {
-  background: var(--teal-light);
-}
-
-.no-attendees {
-  font-size: 0.88rem;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-/* Titulky a admin tlačítko */
+/* ==========================================
+   2. NÁZEV DÍLU
+   ========================================== */
 .title-with-admin {
   display: flex;
   justify-content: space-between;
@@ -402,9 +332,9 @@ header.app-header {
 }
 
 .episode-title-heading {
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.3;
   color: var(--text-main);
   letter-spacing: -0.02em;
 }
@@ -426,15 +356,307 @@ header.app-header {
   color: var(--teal-primary);
 }
 
-/* Děj dílu */
+/* ==========================================
+   3. ORGANIZAČNÍ TÝM & VÝRAZNÁ PILULKA
+   ========================================== */
+.attendees-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.attendees-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.person-tag {
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.other-tag {
+  background: var(--badge-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+
+/* VÝRAZNÁ PILULKA MOJEHO JMÉNA */
+.my-tag-prominent {
+  background: var(--teal-prominent-bg);
+  color: var(--teal-prominent-text);
+  border: 1px solid var(--teal-primary);
+  box-shadow: 0 2px 5px rgba(15, 118, 110, 0.25);
+  cursor: pointer;
+  padding: 0.3rem 0.7rem;
+  gap: 0.45rem;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  font-weight: 800;
+}
+
+.my-tag-prominent:hover {
+  background: #ef4444;
+  border-color: #dc2626;
+  color: #ffffff;
+}
+
+.my-tag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  display: inline-block;
+}
+
+body.dark-theme .my-tag-dot {
+  background-color: #051b1a;
+}
+
+.my-tag-name {
+  font-size: 0.92rem;
+}
+
+.my-tag-remove {
+  font-size: 0.8rem;
+  font-weight: 800;
+  opacity: 0.85;
+  margin-left: 0.2rem;
+}
+
+.btn-add-me-tag {
+  background: transparent;
+  border: 1px dashed var(--teal-primary);
+  color: var(--teal-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.btn-add-me-tag:hover {
+  background: var(--teal-light);
+}
+
+.no-attendees {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ==========================================
+   4. ORGANIZAČNÍ ÚKOLY V BODECH
+   ========================================== */
+.organizer-section {
+  background: var(--badge-bg);
+  border-left: 3px solid var(--text-muted);
+  padding: 0.85rem 1rem;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.organizer-info-header, .questions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.organizer-info-header {
+  color: var(--text-sub);
+}
+
+.btn-task-add-link, .btn-quest-add-link {
+  background: transparent;
+  border: none;
+  color: var(--teal-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.tasks-list, .questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.task-item-row, .question-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.98rem;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.task-bullet {
+  color: var(--teal-primary);
+  font-weight: 800;
+}
+
+.task-content-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.task-name {
+  font-weight: 600;
+}
+
+.task-people {
+  color: var(--teal-primary);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Tlačítko přiřazení se k úkolu */
+.btn-assign-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-assign-toggle:hover {
+  border-color: var(--teal-primary);
+  color: var(--teal-primary);
+  background: var(--teal-light);
+}
+
+.btn-assign-toggle.is-assigned-to-me {
+  background: var(--teal-light);
+  border-color: var(--teal-primary);
+  color: var(--teal-primary);
+}
+
+.btn-task-delete, .btn-quest-delete {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+.btn-task-delete:hover, .btn-quest-delete:hover {
+  opacity: 1;
+  color: #ef4444;
+}
+
+.no-tasks-hint, .no-quest-hint {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.task-inline-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-top: 0.3rem;
+}
+
+.task-input-row {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.task-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-main);
+  padding: 0.45rem 0.65rem;
+  font-size: 0.92rem;
+  outline: none;
+}
+
+.task-input:focus {
+  border-color: var(--teal-primary);
+}
+
+.btn-assign-me {
+  background: var(--badge-bg);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-assign-me:hover {
+  background: var(--teal-light);
+  color: var(--teal-primary);
+  border-color: var(--teal-border);
+}
+
+/* ==========================================
+   5. DĚJ (S POPISEM DĚJ)
+   ========================================== */
+.plot-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.section-label-sub {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--teal-primary);
+}
+
 .summary-text {
-  font-size: 1.1rem;
+  font-size: 1.08rem;
   line-height: 1.6;
   color: var(--text-main);
   font-weight: 400;
 }
 
-/* Postavy */
 .characters-text {
   font-size: 0.92rem;
   color: var(--text-muted);
@@ -447,7 +669,7 @@ header.app-header {
 }
 
 /* ==========================================
-   HLAVNÍ MOTIV K DISKUZI (PRO HOSTY)
+   6. HLAVNÍ MOTIV K DISKUZI (PRO HOSTY)
    ========================================== */
 .discussion-idea {
   background: var(--gold-bg);
@@ -470,76 +692,32 @@ header.app-header {
 }
 
 /* ==========================================
-   TÝMOVÉ OTÁZKY & ORGANIZAČNÍ INFO
+   7. OTÁZKY A POSTŘEHY K DISKUZI V BODECH
    ========================================== */
-.questions-block {
+.custom-questions-section {
   background: var(--teal-light);
   border-left: 3px solid var(--teal-primary);
   padding: 0.85rem 1rem;
   border-radius: 0 8px 8px 0;
-}
-
-.questions-header, .organizer-info-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.35rem;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .questions-header {
   color: var(--teal-primary);
 }
 
-.organizer-info-header {
-  color: var(--text-sub);
-}
-
-.questions-content, .organizer-info-content {
-  font-size: 1.02rem;
-  line-height: 1.5;
-  color: var(--text-main);
-}
-
-.organizer-info-block {
-  background: var(--badge-bg);
-  border-left: 3px solid var(--text-muted);
-  padding: 0.85rem 1rem;
-  border-radius: 0 8px 8px 0;
-}
-
-.btn-action-outline {
-  background: transparent;
-  border: 1px dashed var(--border);
-  color: var(--text-muted);
-  border-radius: 8px;
-  padding: 0.55rem 0.85rem;
-  font-size: 0.92rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
-  transition: all 0.15s ease;
-}
-
-.btn-action-outline:hover {
-  border-color: var(--teal-primary);
+.quest-bullet {
   color: var(--teal-primary);
-  background: var(--teal-light);
+  font-weight: 800;
 }
 
-.btn-edit-link {
-  background: transparent;
-  border: none;
-  color: inherit;
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: underline;
-  opacity: 0.85;
+.quest-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--text-main);
 }
 
 /* ==========================================
@@ -594,9 +772,9 @@ header.app-header {
   background: var(--teal-primary);
   border: none;
   color: #ffffff;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  padding: 0.5rem 1rem;
+  padding: 0.45rem 0.9rem;
   border-radius: 6px;
   cursor: pointer;
 }
@@ -609,9 +787,9 @@ body.dark-theme .btn-save-action {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text-sub);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  padding: 0.5rem 0.85rem;
+  padding: 0.45rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
 }
