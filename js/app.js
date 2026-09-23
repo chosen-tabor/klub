@@ -20,12 +20,8 @@ const els = {
   themeLabel: document.getElementById('themeLabel')
 };
 
-// Stav otevřených editorů
 const activeEditing = {};
 
-// ==========================================
-// SPRÁVA TÉMAT (SVĚTLÉ / TMAVÉ)
-// ==========================================
 function initTheme() {
   const savedTheme = localStorage.getItem('chosen_theme') || 'light';
   if (savedTheme === 'dark') {
@@ -54,11 +50,14 @@ els.themeToggleBtn.addEventListener('click', () => {
 
 initTheme();
 
-// ==========================================
-// PŘIHLAŠOVÁNÍ & AUTENTIZACE
-// ==========================================
 Store.initAuth();
 updateAuthVisibility();
+
+// BLESKOVÝ START: Pokud uživatel je přihlášen, vykreslíme ihned mezipaměť bez čekání
+if (Store.state.isLoggedIn) {
+  render();
+  syncData(); // Synchronizace na pozadí
+}
 
 els.loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -78,6 +77,7 @@ els.loginForm.addEventListener('submit', async (e) => {
     els.loginBtn.disabled = false;
     els.loginBtn.textContent = 'Vstoupit do aplikace';
     updateAuthVisibility();
+    render();
     syncData();
   } else {
     els.loginBtn.disabled = false;
@@ -92,7 +92,7 @@ els.logoutBtn.addEventListener('click', () => {
   updateAuthVisibility();
 });
 
-els.refreshBtn.addEventListener('click', syncData);
+els.refreshBtn.addEventListener('click', () => syncData(true));
 
 function updateAuthVisibility() {
   if (Store.state.isLoggedIn) {
@@ -109,13 +109,13 @@ function updateAuthVisibility() {
   }
 }
 
-// ==========================================
-// SYNCHRONIZACE DAT
-// ==========================================
-async function syncData() {
+async function syncData(manual = false) {
   if (!Store.state.isLoggedIn) return;
 
-  els.statusText.textContent = 'Synchronizuji s tabulkou...';
+  if (manual) {
+    els.statusText.textContent = 'Ověřuji změny v tabulce...';
+  }
+
   const res = await API.fetchAttendance();
 
   if (res.demo) {
@@ -123,15 +123,13 @@ async function syncData() {
   } else if (res.success) {
     Store.loadSheetData(res.data);
     els.statusText.textContent = 'Aktuální data načtena.';
+    render();
   } else {
-    els.statusText.textContent = 'Chyba synchronizace dat.';
+    els.statusText.textContent = manual ? 'Chyba synchronizace dat.' : '';
   }
-  render();
 }
 
-// ==========================================
-// ZÁPISY DO TABULKY
-// ==========================================
+// OPTIMISTICKÝ ZÁPIS ÚČASTI (Okamžitá reakce 0 ms)
 async function handleToggleAttendance(session) {
   const name = Store.state.userName;
   const pin = Store.state.pin;
@@ -147,9 +145,13 @@ async function handleToggleAttendance(session) {
     attendees.push(name);
   }
 
-  els.statusText.textContent = 'Ukládám do tabulky...';
-  render(true);
+  // 1. Změna se ihned projeví na obrazovce
+  Store.state.sessionsData[key] = { ...currentData, attendees };
+  Store.saveCurrentToCache();
+  els.statusText.textContent = 'Změna uložena v telefonu, propisuji do tabulky...';
+  render();
 
+  // 2. Odeslání do Google Tabulky na pozadí
   const res = await API.updateAttendance({
     date: session.dateStr,
     pin: pin,
@@ -162,23 +164,35 @@ async function handleToggleAttendance(session) {
   });
 
   if (res.status === 'ok' || res.demo) {
-    Store.state.sessionsData[key] = { ...currentData, attendees };
-    els.statusText.textContent = 'Změny byly uloženy.';
+    els.statusText.textContent = 'Vše uloženo v tabulce.';
   } else {
-    alert('Chyba: ' + (res.message || 'Nesprávný PIN'));
+    // Pokud zápis selhal, vrátíme původní stav
+    alert('Chyba při zápisu do tabulky: ' + (res.message || 'Chyba spojení'));
+    if (idx > -1) {
+      attendees.splice(idx, 0, name);
+    } else {
+      attendees.pop();
+    }
+    Store.state.sessionsData[key] = { ...currentData, attendees };
+    Store.saveCurrentToCache();
     els.statusText.textContent = 'Zápis selhal.';
+    render();
   }
-
-  render();
 }
 
+// ULOŽENÍ POZNÁMKY (Okamžitá reakce)
 async function handleSaveNote(session, newInfoText) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
   const currentData = Store.state.sessionsData[key] || {};
+  const oldInfo = currentData.info;
 
-  els.statusText.textContent = 'Ukládám organizační info...';
-  render(true);
+  // Okamžitá změna v UI
+  Store.state.sessionsData[key] = { ...currentData, info: newInfoText };
+  Store.saveCurrentToCache();
+  activeEditing[`${key}_note`] = false;
+  els.statusText.textContent = 'Ukládám do tabulky...';
+  render();
 
   const res = await API.updateAttendance({
     date: session.dateStr,
@@ -192,24 +206,28 @@ async function handleSaveNote(session, newInfoText) {
   });
 
   if (res.status === 'ok' || res.demo) {
-    Store.state.sessionsData[key] = { ...currentData, info: newInfoText };
-    activeEditing[`${key}_note`] = false;
-    els.statusText.textContent = 'Organizační info uloženo.';
+    els.statusText.textContent = 'Organizační info uloženo v tabulce.';
   } else {
     alert('Chyba při ukládání: ' + (res.message || 'Nesprávný PIN'));
-    els.statusText.textContent = 'Uložení selhalo.';
+    Store.state.sessionsData[key] = { ...currentData, info: oldInfo };
+    Store.saveCurrentToCache();
+    render();
   }
-
-  render();
 }
 
+// ULOŽENÍ OTÁZEK K DISKUZI (Okamžitá reakce)
 async function handleSaveQuestions(session, newQuestionsText) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
   const currentData = Store.state.sessionsData[key] || {};
+  const oldQuestions = currentData.questions;
 
-  els.statusText.textContent = 'Ukládám otázky a myšlenky...';
-  render(true);
+  // Okamžitá změna v UI
+  Store.state.sessionsData[key] = { ...currentData, questions: newQuestionsText };
+  Store.saveCurrentToCache();
+  activeEditing[`${key}_quest`] = false;
+  els.statusText.textContent = 'Ukládám do tabulky...';
+  render();
 
   const res = await API.updateAttendance({
     date: session.dateStr,
@@ -223,25 +241,31 @@ async function handleSaveQuestions(session, newQuestionsText) {
   });
 
   if (res.status === 'ok' || res.demo) {
-    Store.state.sessionsData[key] = { ...currentData, questions: newQuestionsText };
-    activeEditing[`${key}_quest`] = false;
-    els.statusText.textContent = 'Otázky a myšlenky uloženy.';
+    els.statusText.textContent = 'Otázky uloženy v tabulce.';
   } else {
     alert('Chyba při ukládání: ' + (res.message || 'Nesprávný PIN'));
-    els.statusText.textContent = 'Uložení selhalo.';
+    Store.state.sessionsData[key] = { ...currentData, questions: oldQuestions };
+    Store.saveCurrentToCache();
+    render();
   }
-
-  render();
 }
 
-// Uložení Názvu, Děje a Myšlenky (Admin)
+// ULOŽENÍ DĚJE A MYŠLENKY (ADMIN)
 async function handleSaveAdminPlot(session, newTitle, newSummary, newIdea) {
   const pin = Store.state.pin;
   const key = `${session.day}-${session.month}`;
   const currentData = Store.state.sessionsData[key] || {};
 
-  els.statusText.textContent = 'Ukládám upravený název, děj a myšlenku...';
-  render(true);
+  Store.state.sessionsData[key] = {
+    ...currentData,
+    title: newTitle,
+    summary: newSummary,
+    idea: newIdea
+  };
+  Store.saveCurrentToCache();
+  activeEditing[`${key}_plot`] = false;
+  els.statusText.textContent = 'Ukládám do tabulky...';
+  render();
 
   const res = await API.updateAttendance({
     date: session.dateStr,
@@ -255,26 +279,15 @@ async function handleSaveAdminPlot(session, newTitle, newSummary, newIdea) {
   });
 
   if (res.status === 'ok' || res.demo) {
-    Store.state.sessionsData[key] = {
-      ...currentData,
-      title: newTitle,
-      summary: newSummary,
-      idea: newIdea
-    };
-    activeEditing[`${key}_plot`] = false;
-    els.statusText.textContent = 'Změny byly uloženy do tabulky.';
+    els.statusText.textContent = 'Texty uloženy v tabulce pro všechny.';
   } else {
     alert('Chyba při ukládání: ' + (res.message || 'Nedostatečná oprávnění'));
-    els.statusText.textContent = 'Uložení selhalo.';
+    render();
   }
-
-  render();
 }
 
-// ==========================================
-// VYKRESLOVÁNÍ KARET (RENDER)
-// ==========================================
-function render(isSaving = false) {
+// VYKRESLENÍ KARET
+function render() {
   if (!Store.state.isLoggedIn) return;
 
   els.list.innerHTML = '';
@@ -287,7 +300,6 @@ function render(isSaving = false) {
     const attendees = data.attendees || [];
     const isPresent = currentName && attendees.includes(currentName);
 
-    // Priorita dat z tabulky: pokud je v tabulce text, použije se, jinak výchozí z config.js
     const effectiveTitle = (data.title && data.title.trim()) ? data.title : session.title;
     const effectiveSummary = (data.summary && data.summary.trim()) ? data.summary : session.summary;
     const effectiveIdea = (data.idea && data.idea.trim()) ? data.idea : session.idea;
@@ -327,7 +339,6 @@ function render(isSaving = false) {
           ${effectiveIdea}
         </div>
       ` : `
-        <!-- ADMIN FORMULÁŘ: NÁZEV, DĚJ A MYŠLENKA -->
         <div class="admin-editor-box">
           <label class="editor-label">Název dílu:</label>
           <input type="text" class="editor-textarea admin-title-input" value="${effectiveTitle}">
@@ -339,13 +350,12 @@ function render(isSaving = false) {
           <textarea class="editor-textarea admin-idea-input" rows="3">${effectiveIdea}</textarea>
 
           <div class="editor-actions" style="margin-top: 0.6rem;">
-            <button class="btn-save-action btn-save-plot" ${isSaving ? 'disabled' : ''}>Uložit pro všechny</button>
+            <button class="btn-save-action btn-save-plot">Uložit pro všechny</button>
             <button class="btn-cancel-action btn-cancel-plot">Zrušit</button>
           </div>
         </div>
       `}
 
-      <!-- VLASTNÍ OTÁZKY A POSTŘEHY K DISKUZI -->
       <div class="custom-questions-section">
         ${data.questions ? `
           <div class="questions-block">
@@ -368,14 +378,13 @@ function render(isSaving = false) {
             <label class="editor-label">Otázky k diskuzi:</label>
             <textarea class="editor-textarea" rows="3" placeholder="Otázky pro moderátora do sálu...">${data.questions || ''}</textarea>
             <div class="editor-actions">
-              <button class="btn-save-action btn-save-quest" ${isSaving ? 'disabled' : ''}>Uložit do tabulky</button>
+              <button class="btn-save-action btn-save-quest">Uložit do tabulky</button>
               <button class="btn-cancel-action btn-cancel-quest">Zrušit</button>
             </div>
           </div>
         ` : ''}
       </div>
 
-      <!-- ORGANIZAČNÍ INFO -->
       <div class="organizer-section">
         ${data.info ? `
           <div class="organizer-info-block">
@@ -398,14 +407,13 @@ function render(isSaving = false) {
             <label class="editor-label">Organizační poznámka:</label>
             <textarea class="editor-textarea" rows="2" placeholder="Technika, čaj, klíče...">${data.info || ''}</textarea>
             <div class="editor-actions">
-              <button class="btn-save-action btn-save-note" ${isSaving ? 'disabled' : ''}>Uložit do tabulky</button>
+              <button class="btn-save-action btn-save-note">Uložit do tabulky</button>
               <button class="btn-cancel-action btn-cancel-note">Zrušit</button>
             </div>
           </div>
         ` : ''}
       </div>
 
-      <!-- ÚČASTNÍCI ORGANIZAČNÍHO TÝMU -->
       <div class="attendees-container">
         <div class="attendees-title">Organizační tým (${attendees.length}):</div>
         <div class="tags-wrap">
@@ -416,16 +424,13 @@ function render(isSaving = false) {
         </div>
       </div>
 
-      <!-- TLAČÍTKO ÚČASTI -->
-      <button class="btn-toggle-attendance ${isPresent ? 'is-attending' : ''}" ${isSaving ? 'disabled' : ''}>
+      <button class="btn-toggle-attendance ${isPresent ? 'is-attending' : ''}">
         ${isPresent ? '✓ Odhlásit mou účast' : '+ Budu přítomen'}
       </button>
     `;
 
-    // Obsluha kliknutí na účast
     card.querySelector('.btn-toggle-attendance').addEventListener('click', () => handleToggleAttendance(session));
 
-    // Admin: otevření / uložení / zrušení editace textů dílu
     const editPlotBtn = card.querySelector('.btn-admin-edit');
     if (editPlotBtn) {
       editPlotBtn.addEventListener('click', () => {
@@ -450,7 +455,6 @@ function render(isSaving = false) {
       });
     }
 
-    // Obsluha otázek k diskuzi
     const addQuestBtn = card.querySelector('.btn-quest');
     if (addQuestBtn) {
       addQuestBtn.addEventListener('click', () => {
@@ -478,7 +482,6 @@ function render(isSaving = false) {
       });
     }
 
-    // Obsluha organizačního infa
     const addNoteBtn = card.querySelector('.btn-note');
     if (addNoteBtn) {
       addNoteBtn.addEventListener('click', () => {
@@ -510,13 +513,8 @@ function render(isSaving = false) {
   });
 }
 
-// Service worker reload
 if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('./sw.js').then((reg) => {
     reg.update();
   }).catch(console.error);
-}
-
-if (Store.state.isLoggedIn) {
-  syncData();
 }

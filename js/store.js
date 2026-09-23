@@ -2,7 +2,7 @@ export const Store = {
   state: {
     userName: localStorage.getItem('chosen_user_name') || '',
     pin: localStorage.getItem('chosen_pin') || '',
-    role: localStorage.getItem('chosen_role') || 'team', // 'team' nebo 'admin'
+    role: localStorage.getItem('chosen_role') || 'team',
     isLoggedIn: false,
     sessionsData: {}
   },
@@ -10,6 +10,16 @@ export const Store = {
   initAuth() {
     this.state.isLoggedIn = localStorage.getItem('chosen_logged_in') === 'true';
     this.state.role = localStorage.getItem('chosen_role') || 'team';
+
+    // Okamžité načtení dat z mezipaměti telefonu
+    const cached = localStorage.getItem('chosen_cached_sessions');
+    if (cached) {
+      try {
+        this.state.sessionsData = JSON.parse(cached);
+      } catch (err) {
+        console.error('Chyba při čtení cache:', err);
+      }
+    }
   },
 
   setAuth(name, pin, role = 'team') {
@@ -33,13 +43,14 @@ export const Store = {
     localStorage.removeItem('chosen_pin');
     localStorage.removeItem('chosen_role');
     localStorage.removeItem('chosen_logged_in');
+    localStorage.removeItem('chosen_cached_sessions');
   },
 
   normalizeKey(rawDate) {
     if (!rawDate) return null;
     const czMatch = String(rawDate).match(/^(\d{1,2})\.\s*(\d{1,2})/);
     if (czMatch) return `${parseInt(czMatch[1], 10)}-${parseInt(czMatch[2], 10)}`;
-    
+
     const isoMatch = String(rawDate).match(/^\d{4}-(\d{2})-(\d{2})/);
     if (isoMatch) return `${parseInt(isoMatch[2], 10)}-${parseInt(isoMatch[1], 10)}`;
 
@@ -61,5 +72,11 @@ export const Store = {
         };
       }
     }
+    // Uložení aktuálních dat do paměti telefonu pro příští bleskový start
+    localStorage.setItem('chosen_cached_sessions', JSON.stringify(this.state.sessionsData));
+  },
+
+  saveCurrentToCache() {
+    localStorage.setItem('chosen_cached_sessions', JSON.stringify(this.state.sessionsData));
   }
 };
