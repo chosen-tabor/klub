@@ -8,10 +8,11 @@ export const Store = {
   },
 
   initAuth() {
-    this.state.isLoggedIn = localStorage.getItem('chosen_logged_in') === 'true';
+    this.state.userName = localStorage.getItem('chosen_user_name') || '';
+    this.state.pin = localStorage.getItem('chosen_pin') || '';
     this.state.role = localStorage.getItem('chosen_role') || 'team';
+    this.state.isLoggedIn = localStorage.getItem('chosen_logged_in') === 'true';
 
-    // Okamžité načtení dat z mezipaměti telefonu
     const cached = localStorage.getItem('chosen_cached_sessions');
     if (cached) {
       try {
@@ -58,37 +59,31 @@ export const Store = {
   },
 
   loadSheetData(rows) {
-  if (!Array.isArray(rows)) return;
+    if (!Array.isArray(rows)) return;
 
-  rows.forEach(row => {
-    // Předpokládáme párování podle formátu data, např. "30-9" nebo "2026-09-30"
-    const parts = (row.date || '').split('.');
-    let key = '';
-    if (parts.length >= 2) {
-      key = `${parts[0].trim()}-${parts[1].trim()}`;
-    } else {
-      key = row.date;
-    }
+    rows.forEach(row => {
+      const key = this.normalizeKey(row.date);
+      if (!key) return;
 
-    if (!this.state.sessionsData[key]) {
-      this.state.sessionsData[key] = {};
-    }
+      if (!this.state.sessionsData[key]) {
+        this.state.sessionsData[key] = {};
+      }
 
-    this.state.sessionsData[key] = {
-      ...this.state.sessionsData[key],
-      title: row.title || this.state.sessionsData[key].title || '',
-      attendees: row.attendees || this.state.sessionsData[key].attendees || [],
-      info: row.info || '',
-      questions: row.questions || '',
-      summary: row.summary || this.state.sessionsData[key].summary || '',
-      idea: row.idea || this.state.sessionsData[key].idea || '',
-      ideas: row.ideas || '',      // Nově načtené nápady
-      prayers: row.prayers || ''   // Nově načtené modlitby
-    };
-  });
+      this.state.sessionsData[key] = {
+        ...this.state.sessionsData[key],
+        title: row.title || this.state.sessionsData[key].title || '',
+        attendees: row.attendees || this.state.sessionsData[key].attendees || [],
+        info: row.info || '',
+        questions: row.questions || '',
+        summary: row.summary || this.state.sessionsData[key].summary || '',
+        idea: row.idea || this.state.sessionsData[key].idea || '',
+        ideas: row.ideas || '',
+        prayers: row.prayers || ''
+      };
+    });
 
-  this.saveCurrentToCache();
-}
+    this.saveCurrentToCache();
+  },
 
   saveCurrentToCache() {
     localStorage.setItem('chosen_cached_sessions', JSON.stringify(this.state.sessionsData));
