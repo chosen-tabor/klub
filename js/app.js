@@ -437,7 +437,7 @@ function render() {
       <!-- 4. ORGANIZAČNÍ ÚKOLY V BODECH -->
       <div class="organizer-section">
         <div class="organizer-info-header">
-          <span>📌 Organizační úkoly a příprava:</span>
+          <span>📌 Připravit:</span>
           ${!isAddingTask ? `
             <button class="btn-task-add-link" data-key="${key}_addTask">+ Přidat úkol</button>
           ` : ''}
@@ -512,7 +512,7 @@ function render() {
       <!-- 8. OTÁZKY A POSTŘEHY K DISKUZI V BODECH -->
       <div class="custom-questions-section">
         <div class="questions-header">
-          <span>💬 Otázky a postřehy k diskuzi:</span>
+          <span>💬 Otázky:</span>
           ${!isAddingQuest ? `
             <button class="btn-quest-add-link" data-key="${key}_addQuest">+ Přidat otázku</button>
           ` : ''}
@@ -549,7 +549,7 @@ function render() {
         <!-- PODSEKCE A: NÁPADY -->
         <div class="sub-feedback-box ideas-box">
           <div class="sub-feedback-header ideas-header">
-            <span>💡 Nápady k večeru:</span>
+            <span>💡 Nápady:</span>
             ${!isAddingIdea ? `
               <button class="btn-sub-add-link ideas-link" data-key="${key}_addIdea">+ Přidat nápad</button>
             ` : ''}
@@ -581,7 +581,7 @@ function render() {
         <!-- PODSEKCE B: MODLITBY -->
         <div class="sub-feedback-box prayers-box">
           <div class="sub-feedback-header prayers-header">
-            <span>🙏 Modlitby a přímluvy:</span>
+            <span>🙏 Modlitby:</span>
             ${!isAddingPrayer ? `
               <button class="btn-sub-add-link prayers-link" data-key="${key}_addPrayer">+ Přidat modlitbu</button>
             ` : ''}
