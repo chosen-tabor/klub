@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chosen-club-v23';
+const CACHE_NAME = 'chosen-club-v24';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

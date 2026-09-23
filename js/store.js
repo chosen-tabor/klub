@@ -7,6 +7,7 @@ export const Store = {
     sessionsData: {}
   },
 
+  // Inicializace relace a okamžité načtení offline mezipaměti
   initAuth() {
     this.state.userName = localStorage.getItem('chosen_user_name') || '';
     this.state.pin = localStorage.getItem('chosen_pin') || '';
@@ -23,6 +24,7 @@ export const Store = {
     }
   },
 
+  // Uložení přihlášení
   setAuth(name, pin, role = 'team') {
     this.state.userName = name.trim();
     this.state.pin = pin.trim();
@@ -34,6 +36,7 @@ export const Store = {
     localStorage.setItem('chosen_logged_in', 'true');
   },
 
+  // Odhlášení a vyčištění lokálního stavu
   logout() {
     this.state.userName = '';
     this.state.pin = '';
@@ -47,17 +50,31 @@ export const Store = {
     localStorage.removeItem('chosen_cached_sessions');
   },
 
+  // Převede "30.9.", "30. 9.", "7.10." i "2026-09-30" na jednotný klíč "den-měsíc" (např. "30-9", "7-10")
   normalizeKey(rawDate) {
     if (!rawDate) return null;
-    const czMatch = String(rawDate).match(/^(\d{1,2})\.\s*(\d{1,2})/);
-    if (czMatch) return `${parseInt(czMatch[1], 10)}-${parseInt(czMatch[2], 10)}`;
+    const str = String(rawDate).trim();
 
-    const isoMatch = String(rawDate).match(/^\d{4}-(\d{2})-(\d{2})/);
-    if (isoMatch) return `${parseInt(isoMatch[2], 10)}-${parseInt(isoMatch[1], 10)}`;
+    // Párování pro tečkový zápis: 30.9. nebo 30. 9. nebo 7.10.
+    const czMatch = str.match(/(\d{1,2})\s*\.\s*(\d{1,2})/);
+    if (czMatch) {
+      const day = parseInt(czMatch[1], 10);
+      const month = parseInt(czMatch[2], 10);
+      return `${day}-${month}`;
+    }
 
-    return String(rawDate).replace(/\s+/g, '');
+    // ISO formát pro případ data typu 2026-09-30
+    const isoMatch = str.match(/^\d{4}-(\d{2})-(\d{2})/);
+    if (isoMatch) {
+      const month = parseInt(isoMatch[1], 10);
+      const day = parseInt(isoMatch[2], 10);
+      return `${day}-${month}`;
+    }
+
+    return str;
   },
 
+  // Načtení řádků z Google Tabulky a jejich sloučení do stavu
   loadSheetData(rows) {
     if (!Array.isArray(rows)) return;
 
@@ -65,26 +82,26 @@ export const Store = {
       const key = this.normalizeKey(row.date);
       if (!key) return;
 
-      if (!this.state.sessionsData[key]) {
-        this.state.sessionsData[key] = {};
-      }
+      const existing = this.state.sessionsData[key] || {};
 
       this.state.sessionsData[key] = {
-        ...this.state.sessionsData[key],
-        title: row.title || this.state.sessionsData[key].title || '',
-        attendees: row.attendees || this.state.sessionsData[key].attendees || [],
-        info: row.info || '',
-        questions: row.questions || '',
-        summary: row.summary || this.state.sessionsData[key].summary || '',
-        idea: row.idea || this.state.sessionsData[key].idea || '',
-        ideas: row.ideas || '',
-        prayers: row.prayers || ''
+        ...existing,
+        // Texty z tabulky mají přednost
+        title: (row.title && row.title.trim()) ? row.title : existing.title,
+        attendees: Array.isArray(row.attendees) ? row.attendees : existing.attendees || [],
+        info: row.info !== undefined ? row.info : existing.info || '',
+        questions: row.questions !== undefined ? row.questions : existing.questions || '',
+        summary: (row.summary && row.summary.trim()) ? row.summary : existing.summary,
+        idea: (row.idea && row.idea.trim()) ? row.idea : existing.idea,
+        ideas: row.ideas !== undefined ? row.ideas : existing.ideas || '',
+        prayers: row.prayers !== undefined ? row.prayers : existing.prayers || ''
       };
     });
 
     this.saveCurrentToCache();
   },
 
+  // Uložení stavu do mezipaměti zařízení
   saveCurrentToCache() {
     localStorage.setItem('chosen_cached_sessions', JSON.stringify(this.state.sessionsData));
   }
