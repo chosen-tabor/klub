@@ -98,7 +98,7 @@ if (els.logoutBtn) {
 }
 
 if (els.refreshBtn) {
-  els.refreshBtn.addEventListener('click', () => syncData(true));
+  els.refreshBtn.addEventListener('click', () => syncData());
 }
 
 function updateAuthVisibility() {
@@ -121,10 +121,10 @@ async function syncData() {
 
   try {
     const res = await API.fetchAttendance();
-    if (res.success && Array.isArray(res.data)) {
+    if ((res.status === 'ok' || res.success) && Array.isArray(res.data)) {
       Store.loadSheetData(res.data);
       if (els.statusText) els.statusText.textContent = 'Vše aktuální';
-      render(); // KLÍČOVÉ: Překreslí DOM novými daty z tabulky!
+      render();
     } else {
       if (els.statusText) els.statusText.textContent = 'Režim offline (z mezipaměti)';
     }
@@ -362,7 +362,7 @@ function render() {
     card.className = 'session-card';
 
     card.innerHTML = `
-      <!-- 1. HLAVIČKA: SÉRIE VLEVO, DATUM UPROSTŘED, ČAS VPRAVO -->
+      <!-- 1. HLAVIČKA -->
       <header class="card-top-bar">
         <div class="top-bar-left">
           <span class="season-badge">${session.season}</span>
@@ -453,20 +453,16 @@ function render() {
               <div class="task-item-row">
                 <span class="task-bullet">•</span>
                 <div class="task-content-wrap">
-                  <span class="task-name">${taskDesc}</span>${assignedPeople ? `<span class="task-people">(${assignedPeople})</span>` : ''}
-                  
-                  // Původní:
-                  // <button class="btn-claim-task" ...>Mám na starost</button>
-
-                  // Nové elegantní:
-                  <div class="task-actions">
-                    <button class="btn-claim-task" data-day="${session.day}" data-month="${session.month}" data-index="${idx}" title="Přidat se k úkolu">
-                     + Já
-                    </button>
-                    <button class="btn-delete-item" data-type="task" data-day="${session.day}" data-month="${session.month}" data-index="${idx}" title="Smazat úkol">✕</button>
-                  </div>
+                  <span class="task-name">${taskDesc}</span>${assignedPeople ? ` <span class="task-people">(${assignedPeople})</span>` : ''}
                 </div>
-                <button type="button" class="btn-task-delete" data-idx="${idx}" title="Odstranit úkol">✕</button>
+                <div class="task-actions">
+                  ${!isAssigned ? `
+                    <button type="button" class="btn-claim-task btn-assign-toggle" data-idx="${idx}" title="Vzít si na starost">
+                      + Já
+                    </button>
+                  ` : ''}
+                  <button type="button" class="btn-task-delete" data-idx="${idx}" title="Odstranit úkol">✕</button>
+                </div>
               </div>
             `;
           }).join('') : `
@@ -476,14 +472,14 @@ function render() {
 
         ${isAddingTask ? `
           <div class="task-inline-editor">
-            <div class="task-input-row">
+            <div class="task-input-row" style="margin-bottom: 6px;">
               <input type="text" class="task-input task-desc-input" placeholder="Název úkolu (např. Židle, čaj, technika)...">
             </div>
-            <div class="task-input-row">
-              <input type="text" class="task-input task-person-input" placeholder="Kdo to zařídí (volitelné)...">
-              <button type="button" class="btn-assign-me" title="Doplnit moje jméno">Moje jméno</button>
+            <div class="task-input-row" style="display: flex; gap: 6px; align-items: center; width: 100%;">
+              <input type="text" class="task-input task-person-input" placeholder="Kdo to zařídí (volitelné)..." style="flex: 1 1 auto; min-width: 0;">
+              <button type="button" class="btn-assign-me" title="Doplnit moje jméno" style="flex-shrink: 0; white-space: nowrap;">Moje jméno</button>
             </div>
-            <div class="editor-actions">
+            <div class="editor-actions" style="margin-top: 8px;">
               <button class="btn-save-action btn-save-task">Přidat úkol</button>
               <button class="btn-cancel-action btn-cancel-task">Zrušit</button>
             </div>
@@ -494,7 +490,7 @@ function render() {
       <!-- DĚLÍCÍ ČÁRA PŘED OBSAHEM DÍLU -->
       <hr style="border: none; border-top: 1px solid var(--border-subtle); margin: 0.1rem 0;">
 
-      <!-- 5. DĚJ (S POPISEM DĚJ) -->
+      <!-- 5. DĚJ -->
       ${!isEditingPlot ? `
         <div class="plot-section">
           <span class="section-label-sub">DĚJ</span>
