@@ -395,7 +395,7 @@ function render() {
           <label class="editor-label" style="margin-top: 0.6rem;">Děj dílu (podle Wikipedie):</label>
           <textarea class="editor-textarea admin-summary-input" rows="5">${effectiveSummary}</textarea>
 
-          <label class="editor-label" style="margin-top: 0.6rem;">Hlavní motiv k diskuzi (pro hosty):</label>
+          <label class="editor-label" style="margin-top: 0.6rem;">Hlavní téma k diskuzi (pro hosty):</label>
           <textarea class="editor-textarea admin-idea-input" rows="3">${effectiveIdea}</textarea>
 
           <div class="editor-actions" style="margin-top: 0.6rem;">
