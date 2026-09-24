@@ -502,9 +502,9 @@ function render() {
           <strong>Hlavní postavy:</strong> ${session.characters}
         </p>
 
-        <!-- 7. HLAVNÍ MOTIV K DISKUZI (PRO HOSTY) -->
+        <!-- 7. HLAVNÍ TÉMA K DISKUZI (PRO HOSTY) -->
         <div class="discussion-idea">
-          <strong>Hlavní motiv k diskuzi:</strong>
+          <strong>Hlavní téma k diskuzi:</strong>
           ${effectiveIdea}
         </div>
       ` : ''}
