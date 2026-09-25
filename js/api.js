@@ -1,67 +1,71 @@
 import { CONFIG } from './config.js';
 
 export const API = {
-  // 1. Ověření PINu přes GET požadavek (?action=auth&pin=...)
+  /**
+   * Ověření PINu vůči Google Apps Scriptu.
+   * V souboru api.js žádný PIN není uveden; ověření provádí výhradně backend.
+   */
   async verifyCredentials(pin) {
-    if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes("VASE_SCRIPT_ID")) {
-      return { success: true, role: pin === '1378' ? 'admin' : 'team', demo: true };
+    if (!pin) {
+      return { success: false, message: 'Zadejte prosím PIN.' };
     }
 
     try {
-      const url = `${CONFIG.SCRIPT_URL}?action=auth&pin=${encodeURIComponent(pin)}`;
-      const response = await fetch(url, {
-        method: 'GET',
-        redirect: 'follow',
-        cache: 'no-store'
-      });
-      const res = await response.json();
+      const url = `${CONFIG.SCRIPT_URL}?action=auth&pin=${encodeURIComponent(pin.trim())}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP chyba ${response.status}`);
+      }
+
+      const result = await response.json();
+      return result; // Očekává { success: true, role: 'team' | 'admin' } nebo { success: false, message: '...' }
+    } catch (err) {
+      console.error('Chyba při ověřování PINu:', err);
       return { 
-        success: res.success === true, 
-        role: res.role || 'team', 
-        message: res.message || 'Nesprávný PIN.' 
+        success: false, 
+        message: 'Nelze ověřit PIN. Zkontrolujte připojení k internetu.' 
       };
-    } catch (err) {
-      console.error('API Error verify:', err);
-      return { success: false, message: 'Chyba připojení k serveru' };
     }
   },
 
-  // 2. Načtení všech dat ze sloupců Google Tabulky
+  /**
+   * Načtení aktuálních dat všech setkání z Google Tabulky.
+   */
   async fetchAttendance() {
-    if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes("VASE_SCRIPT_ID")) {
-      return { success: false, demo: true };
-    }
-
     try {
-      const response = await fetch(CONFIG.SCRIPT_URL, {
-        method: 'GET',
-        redirect: 'follow',
-        cache: 'no-store'
-      });
-      const res = await response.json();
-      return { success: res.status === 'ok', data: res.data || [] };
+      const response = await fetch(CONFIG.SCRIPT_URL);
+      if (!response.ok) {
+        throw new Error(`HTTP chyba ${response.status}`);
+      }
+      return await response.json();
     } catch (err) {
-      console.error('API Error fetch:', err);
-      return { success: false, error: err };
+      console.error('Chyba při načítání dat ze serveru:', err);
+      return { status: 'error', message: err.toString() };
     }
   },
 
-  // 3. Uložení změn (účast, úkoly, otázky, nápady, modlitby, texty dílu)
+  /**
+   * Odeslání aktualizace (účast, úkoly, otázky, nápady, modlitby) do Google Tabulky.
+   */
   async updateAttendance(payload) {
-    if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes("VASE_SCRIPT_ID")) {
-      return { status: 'ok', demo: true };
-    }
-
     try {
       const response = await fetch(CONFIG.SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
         body: JSON.stringify(payload)
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP chyba ${response.status}`);
+      }
+
       return await response.json();
     } catch (err) {
-      console.error('API Error post:', err);
-      return { status: 'error', message: 'Chyba připojení' };
+      console.error('Chyba při ukládání dat na server:', err);
+      return { status: 'error', message: err.toString() };
     }
   }
 };
