@@ -313,10 +313,8 @@ function handleToggleIdeaDone(session, index) {
   const isDone = currentLine.startsWith('[x] ') || currentLine.startsWith('[X] ');
 
   if (isDone) {
-    // Odškrtnutí -> odebrání značky [x]
     lines[index] = currentLine.replace(/^\[[xX]\]\s*/, '');
   } else {
-    // Zaškrtnutí -> přidání značky [x]
     lines[index] = `[x] ${currentLine.replace(/^\[\s*\]\s*/, '')}`;
   }
 
@@ -360,7 +358,26 @@ function render() {
   const currentName = Store.state.userName;
   const isAdmin = Store.state.role === 'admin';
 
+  // Logika řazení: nadcházející nahoře, proběhlé na konci
+  const now = new Date();
+  const upcomingSessions = [];
+  const pastSessions = [];
+
   CONFIG.SESSIONS.forEach((session) => {
+    const year = session.year || now.getFullYear();
+    // Konec dne 23:59:59 pro dané datum, aby dnešní večer byl brán jako aktivní
+    const sessionEndDate = new Date(year, session.month - 1, session.day, 23, 59, 59);
+
+    if (sessionEndDate < now) {
+      pastSessions.push({ ...session, isPast: true });
+    } else {
+      upcomingSessions.push({ ...session, isPast: false });
+    }
+  });
+
+  const sortedSessions = [...upcomingSessions, ...pastSessions];
+
+  sortedSessions.forEach((session) => {
     const key = `${session.day}-${session.month}`;
     const data = Store.state.sessionsData[key] || {};
     const attendees = data.attendees || [];
@@ -382,7 +399,7 @@ function render() {
     const prayerItems = (data.prayers || '').split('\n').map(item => item.trim()).filter(Boolean);
 
     const card = document.createElement('article');
-    card.className = 'session-card';
+    card.className = `session-card ${session.isPast ? 'session-card-past' : ''}`;
 
     card.innerHTML = `
       <!-- 1. HLAVIČKA -->
@@ -396,7 +413,7 @@ function render() {
         <div class="top-bar-right">
           <div class="time-badge-inline">
             <span class="time-dot"></span>
-            <span>18:00</span>
+            <span>${session.isPast ? 'Proběhlo' : '18:00'}</span>
           </div>
         </div>
       </header>
@@ -729,7 +746,7 @@ function render() {
         handleToggleIdeaDone(session, idx);
       });
     });
-    
+
     // 6. Modlitby
     const addPrayerBtn = card.querySelector('.btn-sub-add-link.prayers-link');
     if (addPrayerBtn) addPrayerBtn.addEventListener('click', () => { activeEditing[`${key}_addPrayer`] = true; render(); });

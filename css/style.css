@@ -1122,3 +1122,30 @@ body.dark-theme .btn-login-submit {
 .hidden {
   display: none !important;
 }
+
+/* ==========================================
+   PROBĚHLÉ DÍLY (ZTLUMENÝ VZHLED)
+   ========================================== */
+.session-card.session-card-past {
+  opacity: 0.72;
+  filter: grayscale(25%);
+  border-top-color: var(--text-muted); /* Šedý horní proužek místo výrazného */
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+/* Při najetí myší nebo klepnutí se na chvíli zjasní pro snadné čtení */
+.session-card.session-card-past:hover,
+.session-card.session-card-past:focus-within {
+  opacity: 0.95;
+  filter: grayscale(0%);
+}
+
+.session-card.session-card-past .time-badge-inline {
+  background: var(--badge-bg);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.session-card.session-card-past .time-dot {
+  background-color: var(--text-muted);
+}
