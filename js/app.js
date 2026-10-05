@@ -300,6 +300,29 @@ function handleDeleteIdea(session, indexToDelete) {
   updateSessionOnBackend(session, { ideas: lines.join('\n') }, 'Nápad smazán.');
 }
 
+function handleToggleIdeaDone(session, index) {
+  if (Store.state.role !== 'admin') return;
+
+  const key = `${session.day}-${session.month}`;
+  const currentData = Store.state.sessionsData[key] || {};
+  const lines = (currentData.ideas || '').split('\n').map(l => l.trim()).filter(Boolean);
+
+  if (!lines[index]) return;
+
+  let currentLine = lines[index];
+  const isDone = currentLine.startsWith('[x] ') || currentLine.startsWith('[X] ');
+
+  if (isDone) {
+    // Odškrtnutí -> odebrání značky [x]
+    lines[index] = currentLine.replace(/^\[[xX]\]\s*/, '');
+  } else {
+    // Zaškrtnutí -> přidání značky [x]
+    lines[index] = `[x] ${currentLine.replace(/^\[\s*\]\s*/, '')}`;
+  }
+
+  updateSessionOnBackend(session, { ideas: lines.join('\n') }, 'Stav nápadu upraven.');
+}
+
 // 4. MODLITBY
 function handleAddPrayer(session, prayerText) {
   const key = `${session.day}-${session.month}`;
@@ -556,13 +579,22 @@ function render() {
           </div>
 
           <div class="sub-feedback-list">
-            ${ideaItems.length > 0 ? ideaItems.map((it, idx) => `
-              <div class="sub-feedback-row">
-                <span class="idea-bullet">•</span>
-                <span class="sub-feedback-text">${it}</span>
-                <button type="button" class="btn-sub-delete" data-type="idea" data-idx="${idx}" title="Smazat nápad">✕</button>
-              </div>
-            `).join('') : `
+            ${ideaItems.length > 0 ? ideaItems.map((it, idx) => {
+              const isDone = it.startsWith('[x] ') || it.startsWith('[X] ');
+              const cleanText = it.replace(/^\[([ xX])\]\s*/, '');
+
+              return `
+                <div class="sub-feedback-row ${isDone ? 'idea-done' : ''}">
+                  ${isAdmin ? `
+                    <input type="checkbox" class="idea-checkbox" data-idx="${idx}" ${isDone ? 'checked' : ''} title="Označit jako splněné">
+                  ` : `
+                    <span class="idea-bullet">${isDone ? '✓' : '•'}</span>
+                  `}
+                  <span class="sub-feedback-text ${isDone ? 'text-done' : ''}">${cleanText}</span>
+                  <button type="button" class="btn-sub-delete" data-type="idea" data-idx="${idx}" title="Smazat nápad">✕</button>
+                </div>
+              `;
+            }).join('') : `
               <div class="sub-feedback-hint">Žádné zapsané nápady.</div>
             `}
           </div>
@@ -690,6 +722,14 @@ function render() {
     const cancelIdeaBtn = card.querySelector('.btn-cancel-idea');
     if (cancelIdeaBtn) cancelIdeaBtn.addEventListener('click', () => { activeEditing[`${key}_addIdea`] = false; render(); });
 
+    // Zaškrtnutí splněného nápadu (pouze admin)
+    card.querySelectorAll('.idea-checkbox').forEach(chk => {
+      chk.addEventListener('change', (e) => {
+        const idx = parseInt(e.currentTarget.dataset.idx, 10);
+        handleToggleIdeaDone(session, idx);
+      });
+    });
+    
     // 6. Modlitby
     const addPrayerBtn = card.querySelector('.btn-sub-add-link.prayers-link');
     if (addPrayerBtn) addPrayerBtn.addEventListener('click', () => { activeEditing[`${key}_addPrayer`] = true; render(); });

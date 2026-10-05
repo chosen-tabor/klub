@@ -866,6 +866,24 @@ body.dark-theme .ideas-link {
   flex-shrink: 0;
 }
 
+/* Checkbox pro nápady */
+.idea-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #d97706; /* Ladí k jantarové barvě nápadů */
+  flex-shrink: 0;
+}
+
+/* Vzhled splněného nápadu */
+.sub-feedback-row.idea-done {
+  opacity: 0.6;
+}
+
+.sub-feedback-text.text-done {
+  text-decoration: line-through;
+}
+
 /* B: Modlitby (důstojná indigovo-modrá) */
 .prayers-box {
   background: #f0f4f8;
